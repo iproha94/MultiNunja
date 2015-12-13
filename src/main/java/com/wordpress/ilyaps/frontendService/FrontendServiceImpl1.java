@@ -3,8 +3,13 @@ package com.wordpress.ilyaps.frontendService;
 import com.wordpress.ilyaps.ThreadSettings;
 import com.wordpress.ilyaps.accountService.UserProfile;
 import com.wordpress.ilyaps.accountService.message.MsgAccAuthorization;
+import com.wordpress.ilyaps.accountService.message.MsgAccGettingUserProfile;
 import com.wordpress.ilyaps.accountService.message.MsgAccLeaving;
 import com.wordpress.ilyaps.accountService.message.MsgAccRegister;
+import com.wordpress.ilyaps.frontendSockets.WebSocketService;
+import com.wordpress.ilyaps.gamemechService.message.MsgGmmCloseSocket;
+import com.wordpress.ilyaps.gamemechService.message.MsgGmmOpenSocket;
+import com.wordpress.ilyaps.gamemechService.message.MsgGmmReceiveData;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
@@ -26,6 +31,8 @@ public class FrontendServiceImpl1 implements FrontendService {
     private final Address address = new Address();
     @NotNull
     private final MessageSystem messageSystem;
+    @NotNull
+    private final WebSocketService webSocketService;
 
     @NotNull
     private final Map<String, UserProfile> waitingRegUsers = new HashMap<>();
@@ -39,12 +46,21 @@ public class FrontendServiceImpl1 implements FrontendService {
     private final Map<String, UserProfile> waitingLeftUsers = new HashMap<>();
     @NotNull
     private final Map<String, Boolean> readyLeaving = new HashMap<>();
+    @NotNull
+    private final Map<String, UserProfile> waitingGetUsers = new HashMap<>();
+    @NotNull
+    private final Map<String, Boolean> readyGetting = new HashMap<>();
 
-    public FrontendServiceImpl1(@NotNull MessageSystem messageSystem) {
+    public FrontendServiceImpl1(@NotNull MessageSystem messageSystem,
+                                @NotNull WebSocketService webSocketService) {
         this.messageSystem = messageSystem;
         messageSystem.addService(this);
         messageSystem.getAddressService().registerFrontendService(this);
+
+        this.webSocketService = webSocketService;
     }
+
+    //---------------------------------------
 
     @Override
     public void register(String name, String email, String password) {
@@ -78,6 +94,8 @@ public class FrontendServiceImpl1 implements FrontendService {
         waitingRegUsers.put(email, result);
     }
 
+    //---------------------------------------
+
     @Override
     public void authorization(String sessionId, String email, String password) {
         Message msg = new MsgAccAuthorization(
@@ -110,6 +128,8 @@ public class FrontendServiceImpl1 implements FrontendService {
         waitingAuthUsers.put(sessionId, result);
     }
 
+    //---------------------------------------
+
     @Override
     public void leaving(String sessionId) {
         Message msg = new MsgAccLeaving(
@@ -139,6 +159,81 @@ public class FrontendServiceImpl1 implements FrontendService {
         readyLeaving.put(sessionId, true);
         waitingLeftUsers.put(sessionId, result);
     }
+
+    //---------------------------------------
+
+    @Override
+    public void gettingUserProfile(String sessionId) {
+        Message msg = new MsgAccGettingUserProfile(
+                getAddress(),
+                messageSystem.getAddressService().getAccountServiceAddress(),
+                sessionId
+        );
+        messageSystem.sendMessage(msg);
+        readyGetting.put(sessionId, false);
+    }
+
+    @Override
+    public boolean endedGettingUserProfile(String sessionId) {
+        return readyGetting.get(sessionId);
+    }
+
+    @Override
+    public UserProfile successfulGettingUserProfile(String sessionId) {
+        UserProfile profile = waitingGetUsers.get(sessionId);
+        readyGetting.remove(sessionId);
+        waitingGetUsers.remove(sessionId);
+        return profile;
+    }
+
+    @Override
+    public void getUserProfile(String sessionId, UserProfile result) {
+        readyGetting.put(sessionId, true);
+        waitingGetUsers.put(sessionId, result);
+    }
+
+    //---------------------------------------
+
+
+    @Override
+    public void openSocket(String name) {
+        Message msg = new MsgGmmOpenSocket(
+                getAddress(),
+                messageSystem.getAddressService().getGamemechServiceAddress(),
+                name
+        );
+        messageSystem.sendMessage(msg);
+    }
+
+    @Override
+    public void closeSocket(String name) {
+        Message msg = new MsgGmmCloseSocket(
+                getAddress(),
+                messageSystem.getAddressService().getGamemechServiceAddress(),
+                name
+        );
+        messageSystem.sendMessage(msg);
+    }
+
+    //---------------------------------------
+
+    @Override
+    public void receiveData(String name, String data) {
+        Message msg = new MsgGmmReceiveData(
+                getAddress(),
+                messageSystem.getAddressService().getGamemechServiceAddress(),
+                name,
+                data
+        );
+        messageSystem.sendMessage(msg);
+    }
+
+    @Override
+    public void sendData(String name, String data) {
+        webSocketService.notify(name, data);
+    }
+
+    //---------------------------------------
 
     @NotNull
     @Override

@@ -5,12 +5,13 @@ import com.wordpress.ilyaps.accountService.AccountServiceDAOImpl1;
 import com.wordpress.ilyaps.accountService.AccountServiceImpl1;
 import com.wordpress.ilyaps.frontendService.FrontendService;
 import com.wordpress.ilyaps.frontendService.FrontendServiceImpl1;
-import com.wordpress.ilyaps.frontendServlets.AuthorizationServlet;
-import com.wordpress.ilyaps.frontendServlets.LeavingServlet;
-import com.wordpress.ilyaps.frontendServlets.MainpageServlet;
-import com.wordpress.ilyaps.frontendServlets.RegisterServlet;
+import com.wordpress.ilyaps.frontendServlets.*;
+import com.wordpress.ilyaps.frontendSockets.WebSocketService;
+import com.wordpress.ilyaps.frontendSockets.WebSocketServiceImpl;
+import com.wordpress.ilyaps.gamemechService.GamemechServiceImpl1;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
 import com.wordpress.ilyaps.serverHelpers.Configuration;
+import com.wordpress.ilyaps.serverHelpers.GameContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Handler;
@@ -19,6 +20,7 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.Servlet;
@@ -36,13 +38,17 @@ public class Main {
     public static void main(@NotNull String[] args) {
         LOGGER.info("старт сервера");
 
-        Configuration conf = new Configuration(PROPERTIES_FILE);
+        GameContext gameСontext = GameContext.getInstance();
 
-        final Server server = new Server(new Integer(conf.getValueOfProperty("port")));
+        Configuration conf = new Configuration(PROPERTIES_FILE);
+        gameСontext.add(Configuration.class, conf);
+
+        WebSocketService webSocketService = new WebSocketServiceImpl();
+        gameСontext.add(WebSocketService.class, webSocketService);
 
         final MessageSystem messageSystem = new MessageSystem();
 
-        final FrontendService frontendService = new FrontendServiceImpl1(messageSystem);
+        final FrontendService frontendService = new FrontendServiceImpl1(messageSystem, webSocketService);
         final Thread frontendServiceThread = new Thread(frontendService);
         frontendServiceThread.setDaemon(true);
         frontendServiceThread.setName("frontendService");
@@ -52,12 +58,18 @@ public class Main {
         accountServiceThread.setDaemon(true);
         accountServiceThread.setName("Account Service");
 
-        //
+        final Thread gamemechServiceThread = new Thread(new GamemechServiceImpl1(messageSystem));
+        gamemechServiceThread.setDaemon(true);
+        gamemechServiceThread.setName("Gamemech Service");
+
+
+        final Server server = new Server(new Integer(conf.getValueOfProperty("port")));
 
         Servlet mainPage = new MainpageServlet();
         Servlet signUp = new RegisterServlet(frontendService);
         Servlet signIn = new AuthorizationServlet(frontendService);
         Servlet logout = new LeavingServlet(frontendService);
+        WebSocketServlet game = new GameWebSocketServlet(frontendService);
 //
 
 
@@ -67,6 +79,7 @@ public class Main {
         context.addServlet(new ServletHolder(signUp), conf.getValueOfProperty("signupPageUrl"));
         context.addServlet(new ServletHolder(signIn), conf.getValueOfProperty("signinPageUrl"));
         context.addServlet(new ServletHolder(logout), conf.getValueOfProperty("logoutPageUrl"));
+        context.addServlet(new ServletHolder(game), conf.getValueOfProperty("gameSocketUrl"));
 //
 
 
@@ -80,8 +93,7 @@ public class Main {
 
         frontendServiceThread.start();
         accountServiceThread.start();
-        //
-
+        gamemechServiceThread.start();
 
         try {
             server.start();

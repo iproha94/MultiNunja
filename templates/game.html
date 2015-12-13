@@ -1,0 +1,135 @@
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>Game</title>
+    <script src="/js/lib/jquery.js"></script>
+    <script type="text/javascript">
+        var ws;
+        var started = false;
+        var finished = false;
+
+        var myName = "${name}";
+        var enemyName = "";
+
+        init = function () {
+            ws = new WebSocket("ws://${host_game}:${port_game}${url_game}");
+
+            ws.onopen = function (event) {
+                console.log("open");
+            }
+
+            ws.onmessage = function (event) {
+                var data = JSON.parse(event.data);
+                if(data.status == "start"){
+                    alert( "Старт игры" );
+                    document.getElementById("wait").style.display = "none";
+                    document.getElementById("gameplay").style.display = "block";
+                    document.getElementById("mychat").style.display = "block";
+
+                    document.getElementById("time_of_game").innerHTML = data.time_of_game;
+                    //document.getElementById("enemyName").innerHTML = data.enemyName;
+
+                    console.log("Start: Пришло количество игроков: "+data.players.length);
+                    console.log("Их список: ");
+                    for(i=0;i<data.players.length;i++){
+                    	console.log(data.players[i].name);
+                    	$('#score').append("<p id="+data.players[i].name+">"+data.players[i].name+ " : 0</p>");
+                    }
+                }
+
+                if(data.status == "finish"){
+                   alert( "финиш игры");
+                   document.getElementById("gameOver").style.display = "block";
+                   document.getElementById("gameplay").style.display = "none";
+
+
+                   document.getElementById("win").innerHTML = data.win;
+                }
+
+                if(data.status == "scores"){
+                	console.log(data.status+" пришло количество игроков: "+data.players.length);
+                	console.log("их список: ");
+                    for(i=0;i<data.players.length;i++){
+                    	console.log(data.players[i].name);
+                    	$("#"+data.players[i].name).html(data.players[i].name+ " : "+data.players[i].score);
+                    }
+                }
+
+                if(data.status=="message"){
+                	console.log(data);
+                	$("#textarea").append(" "+data.name+" : "+data.text+"\n");
+                }
+
+                if(data.status=="leave"){
+                    $("#"+data.name).hide();
+                }
+
+                //if(data.status == "increment" && data.name == document.getElementById("enemyName").innerHTML){
+                //    document.getElementById("enemyScore").innerHTML = data.score;
+                //}
+            }
+
+            ws.onclose = function (event) {
+            	console.log("соеднинение закрыто");
+            }
+
+        };
+
+        function sendMessage() {
+            var message = { status : "increment" };
+            message = JSON.stringify(message);
+            ws.send(message);
+        }
+
+        function sendMessageChat(event) {
+        	var text = String($("#chat").val());
+            var message = { 
+            	status : "message",
+            	text : text
+        	};
+            message = JSON.stringify(message);
+            ws.send(message);
+        }
+
+    </script>
+</head>
+<body onload="init();">
+
+    <div id="body">
+        <div id="hello">
+            <p>Hello, ${name}!</p>
+        </div>
+            <div id="wait">
+                <p>Prepare yourself. Wait for enemy!</p>
+            </div>
+
+            <div id="gameplay" style="display: none">
+                <p>Time of game: <span id="time_of_game"></span></p>
+                <div id="score">
+                    <!--${name}-->
+
+                   <!-- <p><span id="enemyName"></span>: <span id="enemyScore">0</span></p>-->
+                </div>
+
+                <form name="gamePlay" action="">
+                    <input type="button" name="submit" value="Press to win!" onclick="sendMessage();"/>
+                </form>
+            </div>
+
+            <div id="gameOver" style="display: none">
+                <p>Game over! Winner - <span id="win"></span></p>
+            </div>
+
+    </div>
+  <div style="display: none" id="mychat">
+    <p><b>Чат:</b></p>
+   <p><textarea id="textarea" rows="10" cols="45" name="text" ></textarea></p>
+  <form action="javascript:void(0)" method="post" style="">
+    <p><input id="chat" name="text" /></p>
+    <p><input  type="submit" onclick="sendMessageChat();" value="Отправить"></p>
+  </form>
+</div>
+
+
+</body>
+</html>

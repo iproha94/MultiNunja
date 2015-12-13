@@ -4,6 +4,7 @@ package com.wordpress.ilyaps.messageSystem;
 import com.wordpress.ilyaps.accountService.AccountService;
 import com.wordpress.ilyaps.accountService.AccountServiceImpl1;
 import com.wordpress.ilyaps.frontendService.FrontendService;
+import com.wordpress.ilyaps.gamemechService.GamemechService;
 
 public final class AddressService {
     private Address frontendServiceAddress;
@@ -25,5 +26,13 @@ public final class AddressService {
 
     public Address getAccountServiceAddress() {
         return accountServiceAddress;
+    }
+
+    public void registerGamemechService(GamemechService gamemechService) {
+        this.gamemechServiceAddress = gamemechService.getAddress();
+    }
+
+    public Address getGamemechServiceAddress() {
+        return gamemechServiceAddress;
     }
 }

@@ -18,4 +18,7 @@ public interface AccountServiceDAO {
 
     @Nullable
     UserProfile getUser(@NotNull String email);
+
+    @Nullable
+    UserProfile getUserBySession(@NotNull String sessionId);
 }

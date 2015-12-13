@@ -37,4 +37,26 @@ public interface FrontendService extends Abonent , Runnable {
 
     void left(String sessionId, UserProfile result);
 
+
+
+    void gettingUserProfile(String sessionId);
+
+    boolean endedGettingUserProfile(String sessionId);
+
+    UserProfile successfulGettingUserProfile(String sessionId);
+
+    void getUserProfile(String sessionId, UserProfile result);
+
+
+
+    void openSocket(String name);
+
+    void closeSocket(String name);
+
+
+
+    void receiveData(String name, String data);
+
+    void sendData(String name, String data);
+
 }

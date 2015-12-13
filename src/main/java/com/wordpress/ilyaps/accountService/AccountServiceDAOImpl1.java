@@ -50,4 +50,10 @@ public class AccountServiceDAOImpl1 implements AccountServiceDAO {
     public UserProfile getUser(@NotNull String email) {
         return users.get(email);
     }
+
+    @Nullable
+    @Override
+    public UserProfile getUserBySession(@NotNull String sessionId) {
+        return sessions.get(sessionId);
+    }
 }
