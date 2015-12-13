@@ -1,7 +1,6 @@
 package com.wordpress.ilyaps.gamemechService;
 
 import com.wordpress.ilyaps.messageSystem.Abonent;
-import com.wordpress.ilyaps.messageSystem.MessageSystem;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;

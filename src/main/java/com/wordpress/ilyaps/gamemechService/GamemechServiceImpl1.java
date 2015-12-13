@@ -33,14 +33,17 @@ public class GamemechServiceImpl1 implements GamemechService {
     @NotNull
     private final Set<String> namesPlayers = new HashSet<>();
     @NotNull
-    private  final SpecificGame specificGame = new GamemechMultiNunja(this);
+    private  final SpecificGame specificGame;
 
-    public GamemechServiceImpl1(@NotNull MessageSystem messageSystem) {
-        this.messageSystem = messageSystem;
+    public GamemechServiceImpl1() {
+        this.specificGame = new GamemechMultiNunja(this);
+
+        GameContext gameContext = GameContext.getInstance();
+
+        this.messageSystem = (MessageSystem) gameContext.get(MessageSystem.class);
         messageSystem.addService(this);
         messageSystem.getAddressService().registerGamemechService(this);
 
-        GameContext gameContext = GameContext.getInstance();
         ResourcesContext resourcesContext = (ResourcesContext) gameContext.get(ResourcesContext.class);
         this.gMResource = (GMResource) resourcesContext.get(GMResource.class);
     }

@@ -13,6 +13,7 @@ import com.wordpress.ilyaps.gamemechService.message.MsgGmmReceiveData;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
+import com.wordpress.ilyaps.serverHelpers.GameContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -51,13 +52,14 @@ public class FrontendServiceImpl1 implements FrontendService {
     @NotNull
     private final Map<String, Boolean> readyGetting = new HashMap<>();
 
-    public FrontendServiceImpl1(@NotNull MessageSystem messageSystem,
-                                @NotNull WebSocketService webSocketService) {
-        this.messageSystem = messageSystem;
+    public FrontendServiceImpl1() {
+        GameContext gameContext = GameContext.getInstance();
+
+        this.messageSystem = (MessageSystem) gameContext.get(MessageSystem.class);
         messageSystem.addService(this);
         messageSystem.getAddressService().registerFrontendService(this);
 
-        this.webSocketService = webSocketService;
+        this.webSocketService = (WebSocketService) gameContext.get(WebSocketService.class);
     }
 
     //---------------------------------------

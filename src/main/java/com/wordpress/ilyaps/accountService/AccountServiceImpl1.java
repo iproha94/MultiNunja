@@ -4,6 +4,7 @@ import com.wordpress.ilyaps.ThreadSettings;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
+import com.wordpress.ilyaps.serverHelpers.GameContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -21,8 +22,10 @@ public class AccountServiceImpl1 implements AccountService {
     @NotNull
     AccountServiceDAO accountServiceDAO;
 
-    public AccountServiceImpl1(@NotNull MessageSystem messageSystem, @NotNull AccountServiceDAO accountServiceDAO) {
-        this.messageSystem = messageSystem;
+    public AccountServiceImpl1(@NotNull AccountServiceDAO accountServiceDAO) {
+        GameContext gameContext = GameContext.getInstance();
+
+        this.messageSystem = (MessageSystem) gameContext.get(MessageSystem.class);
         messageSystem.addService(this);
         messageSystem.getAddressService().registerAccountService(this);
 
