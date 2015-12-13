@@ -1,7 +1,5 @@
 package com.wordpress.ilyaps.gamemechService;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.wordpress.ilyaps.ThreadSettings;
 import com.wordpress.ilyaps.frontendService.message.MsgFrnSendData;
 import com.wordpress.ilyaps.messageSystem.Address;
@@ -29,13 +27,13 @@ public class GamemechServiceImpl1 implements GamemechService {
     @NotNull
     private GMResource gMResource;
     @NotNull
-    private final GameMessageCreator gameMessageCreator = new GameMessageCreator(this);
-    @NotNull
     private final Map<String, GameSession> nameToGame = new HashMap<>();
     @NotNull
     private final Set<GameSession> allSessions = new HashSet<>();
     @NotNull
     private final Set<String> namesPlayers = new HashSet<>();
+    @NotNull
+    private  final SpecificGame specificGame = new GamemechMultiNunja(this);
 
     public GamemechServiceImpl1(@NotNull MessageSystem messageSystem) {
         this.messageSystem = messageSystem;
@@ -45,6 +43,12 @@ public class GamemechServiceImpl1 implements GamemechService {
         GameContext gameContext = GameContext.getInstance();
         ResourcesContext resourcesContext = (ResourcesContext) gameContext.get(ResourcesContext.class);
         this.gMResource = (GMResource) resourcesContext.get(GMResource.class);
+    }
+
+    @Override
+    @NotNull
+    public Map<String, GameSession> getNameToGame() {
+        return nameToGame;
     }
 
     @Override
@@ -90,22 +94,9 @@ public class GamemechServiceImpl1 implements GamemechService {
 
     @Override
     public void receiveData(String name, String data) {
-        // тут приняли данные от сокета и как нить их обрабатываем
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObj = jsonParser.parse(data).getAsJsonObject();
-
-        String status = jsonObj.get("status").getAsString();
-
-        if ("increment".equals(status)) {
-            incrementScore(name);
-            return;
-        }
-
-        if ("message".equals(status)) {
-            String text = jsonObj.get("text").getAsString();
-            textInChat(name, text);
-        }
+        specificGame.receiveData(name, data);
     }
+
 
     @Override
     public void sendData(String name, String data) {
@@ -115,7 +106,7 @@ public class GamemechServiceImpl1 implements GamemechService {
                 name,
                 data
         );
-        messageSystem.sendMessage(msg);
+        this.sendMessage(msg);
     }
 
     @Override
@@ -149,13 +140,10 @@ public class GamemechServiceImpl1 implements GamemechService {
             return true;
         }
 
-        String message = gameMessageCreator.createMessageLeave(name);
+        String message = GameMessageCreator.createMessageLeave(name);
 
         for (GameUser user : gameSession.getGameUsers()) {
-            Message msg = new MsgFrnSendData(this.getAddress(),
-                    messageSystem.getAddressService().getFrontendServiceAddress(),
-                    user.getName(), message);
-            this.sendMessage(msg);
+            sendData(user.getName(), message);
         }
 
         return true;
@@ -170,13 +158,11 @@ public class GamemechServiceImpl1 implements GamemechService {
             nameToGame.put(userName, gameSession);
             GameUser gameUser = gameSession.getGameUser(userName);
 
-            String message = gameMessageCreator.createMessageStartGame(gameSession, userName, gMResource.getGameTime());
+            String message = GameMessageCreator.createMessageStartGame(gameSession, userName, gMResource.getGameTime());
 
             if (gameUser != null) {
-                Message msg = new MsgFrnSendData(this.getAddress(),
-                        messageSystem.getAddressService().getFrontendServiceAddress(),
-                        userName, message);
-                this.sendMessage(msg);
+                sendData(userName, message);
+
             } else {
                 LOGGER.error("gameuser == null");
             }
@@ -185,57 +171,14 @@ public class GamemechServiceImpl1 implements GamemechService {
 
     private void finishGame(@NotNull GameSession session) {
         String nameWinner = session.getNameWinner();
-        String message = gameMessageCreator.createMessageGameOver(nameWinner);
+        String message = GameMessageCreator.createMessageGameOver(nameWinner);
         LOGGER.info("finish game");
 
         for (GameUser user : session.getGameUsers()) {
-            Message msg = new MsgFrnSendData(this.getAddress(),
-                    messageSystem.getAddressService().getFrontendServiceAddress(),
-                    user.getName(), message);
-            this.sendMessage(msg);
+            sendData(user.getName(), message);
 
             //accountService.addScore(user.getName(), user.getScore());
             nameToGame.remove(user.getName());
-        }
-    }
-
-    public void incrementScore(@NotNull String userName) {
-        GameSession gameSession = nameToGame.get(userName);
-        if (gameSession == null) {
-            LOGGER.warn("userGameSession == null");
-            return;
-        }
-
-        GameUser gameUser = gameSession.getGameUser(userName);
-        if (gameUser == null) {
-            LOGGER.warn("gameUser == null");
-            return;
-        }
-
-        gameUser.incrementScore();
-
-        String message = gameMessageCreator.createMessageIncrementScore(gameSession);
-        for (GameUser user : gameSession.getGameUsers()) {
-            Message msg = new MsgFrnSendData(this.getAddress(),
-                    messageSystem.getAddressService().getFrontendServiceAddress(),
-                    user.getName(), message);
-            this.sendMessage(msg);
-        }
-    }
-
-    public void textInChat(@NotNull String authorName, @NotNull String text) {
-        GameSession gameSession = nameToGame.get(authorName);
-        if (gameSession == null) {
-            LOGGER.warn("userGameSession == null");
-            return;
-        }
-
-        String message = gameMessageCreator.createMessageTextInChat(authorName, text);
-        for (GameUser user : gameSession.getGameUsers()) {
-            Message msg = new MsgFrnSendData(this.getAddress(),
-                    messageSystem.getAddressService().getFrontendServiceAddress(),
-                    user.getName(), message);
-            this.sendMessage(msg);
         }
     }
 }

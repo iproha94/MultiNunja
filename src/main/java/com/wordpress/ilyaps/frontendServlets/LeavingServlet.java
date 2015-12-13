@@ -56,7 +56,7 @@ public class LeavingServlet extends HttpServlet {
                 LOGGER.info("ждем окончание leaving");
                 try {
                     synchronized (this) {
-                        this.wait(ThreadSettings.SLEEP_TIME);
+                        this.wait(ThreadSettings.SLEEP_TIME_SERVLET);
                     }
                 } catch (InterruptedException e) {
                     LOGGER.error("wait потока сервлета");
