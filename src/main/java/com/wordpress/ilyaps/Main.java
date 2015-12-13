@@ -81,9 +81,9 @@ public class Main {
         Servlet signUp = new RegisterServlet(frontendService);
         Servlet signIn = new AuthorizationServlet(frontendService);
         Servlet logout = new LeavingServlet(frontendService);
+        Servlet admin = new AdminpageServlet(frontendService, server);
         WebSocketServlet game = new GameWebSocketServlet(frontendService);
-//
-
+        Servlet scores = new ScoresServlet(frontendService);
 
         final ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
@@ -92,7 +92,8 @@ public class Main {
         context.addServlet(new ServletHolder(signIn), conf.getValueOfProperty("signinPageUrl"));
         context.addServlet(new ServletHolder(logout), conf.getValueOfProperty("logoutPageUrl"));
         context.addServlet(new ServletHolder(game), conf.getValueOfProperty("gameSocketUrl"));
-//
+        context.addServlet(new ServletHolder(admin), conf.getValueOfProperty("adminPageUrl"));
+        context.addServlet(new ServletHolder(scores), conf.getValueOfProperty("scoresPageUrl"));
 
 
         final ResourceHandler resourceHandler = new ResourceHandler();
@@ -113,5 +114,7 @@ public class Main {
             LOGGER.error("Server isn't started");
             LOGGER.error(e);
         }
+
+       LOGGER.info("выходим из мейна");
     }
 }
