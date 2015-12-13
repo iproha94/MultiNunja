@@ -10,6 +10,7 @@ import com.wordpress.ilyaps.frontendSockets.WebSocketService;
 import com.wordpress.ilyaps.frontendSockets.WebSocketServiceImpl;
 import com.wordpress.ilyaps.gamemechService.GamemechServiceImpl1;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
+import com.wordpress.ilyaps.resourceSystem.ResourcesContext;
 import com.wordpress.ilyaps.serverHelpers.Configuration;
 import com.wordpress.ilyaps.serverHelpers.GameContext;
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +46,9 @@ public class Main {
 
         WebSocketService webSocketService = new WebSocketServiceImpl();
         gameСontext.add(WebSocketService.class, webSocketService);
+
+        ResourcesContext resourcesContext = new ResourcesContext(conf.getValueOfProperty("resourcesDirectory"));
+        gameСontext.add(ResourcesContext.class, resourcesContext);
 
         final MessageSystem messageSystem = new MessageSystem();
 
