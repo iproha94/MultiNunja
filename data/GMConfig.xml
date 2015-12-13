@@ -1,5 +1,5 @@
 <class type='com.wordpress.ilyaps.resourceSystem.GMResource'>
-    <stepTime>1000</stepTime>
+    <stepTime>100</stepTime>
     <gameTime>30000</gameTime>
     <numberPlayers>2</numberPlayers>
 </class>

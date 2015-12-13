@@ -24,10 +24,10 @@ import java.util.Map;
 /**
  * Created by ilya on 12.12.15.
  */
-public class FrontendServiceImpl1 implements FrontendService {
+public class FrontendServiceImpl implements FrontendService {
 
     @NotNull
-    static final Logger LOGGER = LogManager.getLogger(FrontendServiceImpl1.class);
+    static final Logger LOGGER = LogManager.getLogger(FrontendServiceImpl.class);
     @NotNull
     private final Address address = new Address();
     @NotNull
@@ -52,7 +52,7 @@ public class FrontendServiceImpl1 implements FrontendService {
     @NotNull
     private final Map<String, Boolean> readyGetting = new HashMap<>();
 
-    public FrontendServiceImpl1() {
+    public FrontendServiceImpl() {
         GameContext gameContext = GameContext.getInstance();
 
         this.messageSystem = (MessageSystem) gameContext.get(MessageSystem.class);

@@ -25,7 +25,7 @@ public class MsgAccGettingUserProfile extends MsgToAccountService {
 
     @Override
     protected void exec(AccountService service) {
-        final UserProfile profile = service.getAccountServiceDAO().getUserBySession(sessionId);
+        final UserProfile profile = service.getAccountServiceDAO().getAuthorizedUser(sessionId);
         final Message msg = new MsgFrnGetUserProfile(getTo(), getFrom(), sessionId, profile);
         service.sendMessage(msg);
     }

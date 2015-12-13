@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by ilya on 12.12.15.
  */
-public class AccountServiceDAOImpl1 implements AccountServiceDAO {
+public class AccountServiceDAOImpl implements AccountServiceDAO {
     @NotNull
     private final Map<String, UserProfile> users = new HashMap<>();
     @NotNull
@@ -31,7 +31,7 @@ public class AccountServiceDAOImpl1 implements AccountServiceDAO {
 
     @Override
     public UserProfile authorization(@NotNull String sessionId, @NotNull String email, @NotNull String password) {
-        UserProfile profile = getUser(email);
+        UserProfile profile = getRegisteredUser(email);
         if (profile == null || !password.equals(profile.getPassword())) {
             return null;
         }
@@ -47,13 +47,18 @@ public class AccountServiceDAOImpl1 implements AccountServiceDAO {
     }
 
     @Override
-    public UserProfile getUser(@NotNull String email) {
+    public UserProfile getRegisteredUser(@NotNull String email) {
         return users.get(email);
     }
 
     @Nullable
     @Override
-    public UserProfile getUserBySession(@NotNull String sessionId) {
+    public UserProfile getAuthorizedUser(@NotNull String sessionId) {
         return sessions.get(sessionId);
+    }
+
+    @Override
+    public void addScore(@NotNull String name, int score) {
+
     }
 }

@@ -17,8 +17,10 @@ public interface AccountServiceDAO {
     UserProfile leaving(@NotNull String sessionId);
 
     @Nullable
-    UserProfile getUser(@NotNull String email);
+    UserProfile getRegisteredUser(@NotNull String email);
 
     @Nullable
-    UserProfile getUserBySession(@NotNull String sessionId);
+    UserProfile getAuthorizedUser(@NotNull String sessionId);
+
+    void addScore(@NotNull String name, int score);
 }

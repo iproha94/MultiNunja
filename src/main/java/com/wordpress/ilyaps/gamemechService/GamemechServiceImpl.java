@@ -1,6 +1,6 @@
 package com.wordpress.ilyaps.gamemechService;
 
-import com.wordpress.ilyaps.ThreadSettings;
+import com.wordpress.ilyaps.accountService.message.MsgAccScore;
 import com.wordpress.ilyaps.frontendService.message.MsgFrnSendData;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
@@ -17,9 +17,9 @@ import java.util.*;
 /**
  * Created by ilya on 13.12.15.
  */
-public class GamemechServiceImpl1 implements GamemechService {
+public class GamemechServiceImpl implements GamemechService {
     @NotNull
-    static final Logger LOGGER = LogManager.getLogger(GamemechServiceImpl1.class);
+    static final Logger LOGGER = LogManager.getLogger(GamemechServiceImpl.class);
     @NotNull
     private final Address address = new Address();
     @NotNull
@@ -35,7 +35,7 @@ public class GamemechServiceImpl1 implements GamemechService {
     @NotNull
     private  final SpecificGame specificGame;
 
-    public GamemechServiceImpl1() {
+    public GamemechServiceImpl() {
         this.specificGame = new GamemechMultiNunja(this);
 
         GameContext gameContext = GameContext.getInstance();
@@ -75,7 +75,7 @@ public class GamemechServiceImpl1 implements GamemechService {
             messageSystem.execForAbonent(this);
             gmStep(gameTime);
             try {
-                Thread.sleep(ThreadSettings.SLEEP_TIME);
+                Thread.sleep(stepTime);
             } catch (InterruptedException e) {
                 LOGGER.error("засыпания потока");
                 LOGGER.error(e);
@@ -180,7 +180,14 @@ public class GamemechServiceImpl1 implements GamemechService {
         for (GameUser user : session.getGameUsers()) {
             sendData(user.getName(), message);
 
-            //accountService.addScore(user.getName(), user.getScore());
+            Message msg = new MsgAccScore(
+                    getAddress(),
+                    messageSystem.getAddressService().getFrontendServiceAddress(),
+                    user.getName(),
+                    user.getScore()
+            );
+            this.sendMessage(msg);
+
             nameToGame.remove(user.getName());
         }
     }

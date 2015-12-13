@@ -2,17 +2,15 @@ package com.wordpress.ilyaps;
 
 import com.wordpress.ilyaps.accountService.AccountService;
 import com.wordpress.ilyaps.accountService.AccountServiceDAO;
-import com.wordpress.ilyaps.accountService.AccountServiceDAOImpl1;
-import com.wordpress.ilyaps.accountService.AccountServiceImpl1;
+import com.wordpress.ilyaps.accountService.AccountServiceDAOImpl;
+import com.wordpress.ilyaps.accountService.AccountServiceImpl;
 import com.wordpress.ilyaps.frontendService.FrontendService;
-import com.wordpress.ilyaps.frontendService.FrontendServiceImpl1;
+import com.wordpress.ilyaps.frontendService.FrontendServiceImpl;
 import com.wordpress.ilyaps.frontendServlets.*;
 import com.wordpress.ilyaps.frontendSockets.WebSocketService;
 import com.wordpress.ilyaps.frontendSockets.WebSocketServiceImpl;
-import com.wordpress.ilyaps.gamemechService.GamemechMultiNunja;
 import com.wordpress.ilyaps.gamemechService.GamemechService;
-import com.wordpress.ilyaps.gamemechService.GamemechServiceImpl1;
-import com.wordpress.ilyaps.gamemechService.SpecificGame;
+import com.wordpress.ilyaps.gamemechService.GamemechServiceImpl;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
 import com.wordpress.ilyaps.resourceSystem.ResourcesContext;
 import com.wordpress.ilyaps.serverHelpers.Configuration;
@@ -57,21 +55,21 @@ public class Main {
         final MessageSystem messageSystem = new MessageSystem();
         gameСontext.add(MessageSystem.class, messageSystem);
 
-        final FrontendService frontendService = new FrontendServiceImpl1();
+        final FrontendService frontendService = new FrontendServiceImpl();
         final Thread frontendServiceThread = new Thread(frontendService);
         frontendServiceThread.setDaemon(true);
         frontendServiceThread.setName("frontendService");
         gameСontext.add(FrontendService.class, frontendService);
 
 
-        final AccountServiceDAO accountServiceDAO = new AccountServiceDAOImpl1();
-        final AccountService accountService = new AccountServiceImpl1(accountServiceDAO);
+        final AccountServiceDAO accountServiceDAO = new AccountServiceDAOImpl();
+        final AccountService accountService = new AccountServiceImpl(accountServiceDAO);
         final Thread accountServiceThread = new Thread(accountService);
         accountServiceThread.setDaemon(true);
         accountServiceThread.setName("Account Service");
         gameСontext.add(AccountService.class, accountService);
 
-        final GamemechService gamemechService = new GamemechServiceImpl1();
+        final GamemechService gamemechService = new GamemechServiceImpl();
         final Thread gamemechServiceThread = new Thread(gamemechService);
         gamemechServiceThread.setDaemon(true);
         gamemechServiceThread.setName("Gamemech Service");

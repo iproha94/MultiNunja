@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Created by ilya on 12.12.15.
  */
-public class AccountServiceImpl1 implements AccountService {
+public class AccountServiceImpl implements AccountService {
     @NotNull
-    static final Logger LOGGER = LogManager.getLogger(AccountServiceImpl1.class);
+    static final Logger LOGGER = LogManager.getLogger(AccountServiceImpl.class);
     @NotNull
     private final Address address = new Address();
     @NotNull
@@ -22,7 +22,7 @@ public class AccountServiceImpl1 implements AccountService {
     @NotNull
     AccountServiceDAO accountServiceDAO;
 
-    public AccountServiceImpl1(@NotNull AccountServiceDAO accountServiceDAO) {
+    public AccountServiceImpl(@NotNull AccountServiceDAO accountServiceDAO) {
         GameContext gameContext = GameContext.getInstance();
 
         this.messageSystem = (MessageSystem) gameContext.get(MessageSystem.class);

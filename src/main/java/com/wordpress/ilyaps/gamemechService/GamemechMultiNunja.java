@@ -2,7 +2,6 @@ package com.wordpress.ilyaps.gamemechService;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.wordpress.ilyaps.serverHelpers.GameContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
