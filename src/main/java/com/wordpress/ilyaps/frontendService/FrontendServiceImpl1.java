@@ -1,6 +1,9 @@
 package com.wordpress.ilyaps.frontendService;
 
 import com.wordpress.ilyaps.ThreadSettings;
+import com.wordpress.ilyaps.accountService.UserProfile;
+import com.wordpress.ilyaps.accountService.message.MsgAccAuthorization;
+import com.wordpress.ilyaps.accountService.message.MsgAccLeaving;
 import com.wordpress.ilyaps.accountService.message.MsgAccRegister;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
@@ -25,8 +28,17 @@ public class FrontendServiceImpl1 implements FrontendService {
     private final MessageSystem messageSystem;
 
     @NotNull
-    private final Map<String, Boolean> waitingUsers = new HashMap<>();
-
+    private final Map<String, UserProfile> waitingRegUsers = new HashMap<>();
+    @NotNull
+    private final Map<String, Boolean> readyRegistration = new HashMap<>();
+    @NotNull
+    private final Map<String, UserProfile> waitingAuthUsers = new HashMap<>();
+    @NotNull
+    private final Map<String, Boolean> readyAutherization = new HashMap<>();
+    @NotNull
+    private final Map<String, UserProfile> waitingLeftUsers = new HashMap<>();
+    @NotNull
+    private final Map<String, Boolean> readyLeaving = new HashMap<>();
 
     public FrontendServiceImpl1(@NotNull MessageSystem messageSystem) {
         this.messageSystem = messageSystem;
@@ -44,52 +56,88 @@ public class FrontendServiceImpl1 implements FrontendService {
                 password
         );
         this.sendMessage(msg);
+        readyRegistration.put(email, false);
     }
 
     @Override
     public boolean endedRegistration(String email) {
-        Boolean value = waitingUsers.get(email);
-        if (value == null) {
-            return false;
-        }
-        return true;
+        return readyRegistration.get(email);
     }
 
     @Override
-    public boolean successfulRegistration(String email) {
-        return waitingUsers.remove(email);
+    public UserProfile successfulRegistration(String email) {
+        UserProfile profile = waitingRegUsers.get(email);
+        readyRegistration.remove(email);
+        waitingRegUsers.remove(email);
+        return profile;
     }
 
     @Override
-    public void registered(String email, boolean result) {
-        waitingUsers.put(email, result);
+    public void registered(String email, UserProfile result) {
+        readyRegistration.put(email, true);
+        waitingRegUsers.put(email, result);
     }
 
     @Override
-    public boolean alreadyRegistered(String name, String email) {
-
-        return false;
+    public void authorization(String sessionId, String email, String password) {
+        Message msg = new MsgAccAuthorization(
+                getAddress(),
+                messageSystem.getAddressService().getAccountServiceAddress(),
+                sessionId,
+                email,
+                password
+        );
+        messageSystem.sendMessage(msg);
+        readyAutherization.put(sessionId, false);
     }
 
     @Override
-    public void authorization(String email, String password) {
-
+    public boolean endedAuthorization(String sessionId) {
+        return readyAutherization.get(sessionId);
     }
 
     @Override
-    public boolean isAuthorized(String sessionId) {
+    public UserProfile successfulAuthorization(String sessionId) {
+        UserProfile profile = waitingAuthUsers.get(sessionId);
+        readyAutherization.remove(sessionId);
+        waitingAuthUsers.remove(sessionId);
+        return profile;
+    }
 
-        return false;
+    @Override
+    public void authorized(String sessionId, UserProfile result) {
+        readyAutherization.put(sessionId, true);
+        waitingAuthUsers.put(sessionId, result);
     }
 
     @Override
     public void leaving(String sessionId) {
-
+        Message msg = new MsgAccLeaving(
+                getAddress(),
+                messageSystem.getAddressService().getAccountServiceAddress(),
+                sessionId
+        );
+        messageSystem.sendMessage(msg);
+        readyLeaving.put(sessionId, false);
     }
 
     @Override
-    public boolean isLeft(String sessionId) {
-        return false;
+    public boolean endedLeaving(String sessionId) {
+        return readyLeaving.get(sessionId);
+    }
+
+    @Override
+    public UserProfile successfulLeaving(String sessionId) {
+        UserProfile profile = waitingLeftUsers.get(sessionId);
+        readyLeaving.remove(sessionId);
+        waitingLeftUsers.remove(sessionId);
+        return profile;
+    }
+
+    @Override
+    public void left(String sessionId, UserProfile result) {
+        readyLeaving.put(sessionId, true);
+        waitingLeftUsers.put(sessionId, result);
     }
 
     @NotNull

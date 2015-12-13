@@ -1,5 +1,6 @@
 package com.wordpress.ilyaps.frontendService.message;
 
+import com.wordpress.ilyaps.accountService.UserProfile;
 import com.wordpress.ilyaps.frontendService.FrontendService;
 import com.wordpress.ilyaps.messageSystem.Address;
 
@@ -8,9 +9,9 @@ import com.wordpress.ilyaps.messageSystem.Address;
  */
 public class MsgFrnRegistered extends MsgToFrontendService {
     private String email;
-    private boolean result;
+    private UserProfile result;
 
-    public MsgFrnRegistered(Address from, Address to, String email, boolean result) {
+    public MsgFrnRegistered(Address from, Address to, String email, UserProfile result) {
         super(from, to);
         this.email = email;
         this.result = result;

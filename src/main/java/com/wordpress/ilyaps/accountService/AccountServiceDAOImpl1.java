@@ -17,23 +17,37 @@ public class AccountServiceDAOImpl1 implements AccountServiceDAO {
 
 
     @Override
-    public boolean register(@NotNull String name, @NotNull String email, @NotNull String password) {
+    @Nullable
+    public UserProfile register(@NotNull String name, @NotNull String email, @NotNull String password) {
         synchronized (users) {
             if (users.containsKey(email)) {
-                return false;
+                return null;
             }
-            users.put(email, new UserProfile(name, email, password));
-            return true;
+            UserProfile profile = new UserProfile(name, email, password);
+            users.put(email, profile);
+            return profile;
         }
     }
 
     @Override
-    public boolean authorization(@NotNull String email, @NotNull String password) {
-        return false;
+    public UserProfile authorization(@NotNull String sessionId, @NotNull String email, @NotNull String password) {
+        UserProfile profile = getUser(email);
+        if (profile == null || !password.equals(profile.getPassword())) {
+            return null;
+        }
+
+        sessions.put(sessionId, profile);
+        return profile;
+    }
+
+    @Nullable
+    @Override
+    public UserProfile leaving(@NotNull String sessionId) {
+        return sessions.remove(sessionId);
     }
 
     @Override
-    public UserProfile getUser(@Nullable String userEmail) {
-        return null;
+    public UserProfile getUser(@NotNull String email) {
+        return users.get(email);
     }
 }

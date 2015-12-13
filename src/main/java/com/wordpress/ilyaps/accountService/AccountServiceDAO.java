@@ -7,9 +7,15 @@ import org.jetbrains.annotations.Nullable;
  * @author e.shubin
  */
 public interface AccountServiceDAO {
-    boolean register(@NotNull String name, @NotNull String email, @NotNull String password);
+    @Nullable
+    UserProfile register(@NotNull String name, @NotNull String email, @NotNull String password);
 
-    boolean authorization(@NotNull String email, @NotNull String password);
+    @Nullable
+    UserProfile authorization(@NotNull String sessionId, @NotNull String email, @NotNull String password);
 
-    UserProfile getUser(@Nullable String userEmail);
+    @Nullable
+    UserProfile leaving(@NotNull String sessionId);
+
+    @Nullable
+    UserProfile getUser(@NotNull String email);
 }

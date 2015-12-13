@@ -5,6 +5,8 @@ import com.wordpress.ilyaps.accountService.AccountServiceDAOImpl1;
 import com.wordpress.ilyaps.accountService.AccountServiceImpl1;
 import com.wordpress.ilyaps.frontendService.FrontendService;
 import com.wordpress.ilyaps.frontendService.FrontendServiceImpl1;
+import com.wordpress.ilyaps.frontendServlets.AuthorizationServlet;
+import com.wordpress.ilyaps.frontendServlets.LeavingServlet;
 import com.wordpress.ilyaps.frontendServlets.MainpageServlet;
 import com.wordpress.ilyaps.frontendServlets.RegisterServlet;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
@@ -54,14 +56,18 @@ public class Main {
 
         Servlet mainPage = new MainpageServlet();
         Servlet signUp = new RegisterServlet(frontendService);
-        //
+        Servlet signIn = new AuthorizationServlet(frontendService);
+        Servlet logout = new LeavingServlet(frontendService);
+//
 
 
         final ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
         context.addServlet(new ServletHolder(mainPage), conf.getValueOfProperty("mainPageUrl"));
         context.addServlet(new ServletHolder(signUp), conf.getValueOfProperty("signupPageUrl"));
-        //
+        context.addServlet(new ServletHolder(signIn), conf.getValueOfProperty("signinPageUrl"));
+        context.addServlet(new ServletHolder(logout), conf.getValueOfProperty("logoutPageUrl"));
+//
 
 
         final ResourceHandler resourceHandler = new ResourceHandler();

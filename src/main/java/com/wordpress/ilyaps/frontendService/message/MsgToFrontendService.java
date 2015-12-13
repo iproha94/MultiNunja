@@ -21,5 +21,5 @@ public abstract class MsgToFrontendService extends Message {
         }
     }
 
-    protected abstract void exec(FrontendService frontendService);
+    protected abstract void exec(FrontendService service);
 }

@@ -1,6 +1,7 @@
 package com.wordpress.ilyaps.accountService.message;
 
 import com.wordpress.ilyaps.accountService.AccountService;
+import com.wordpress.ilyaps.accountService.UserProfile;
 import com.wordpress.ilyaps.frontendService.message.MsgFrnRegistered;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
@@ -32,7 +33,7 @@ public class MsgAccRegister extends MsgToAccountService {
 
     @Override
     protected void exec(AccountService service) {
-        boolean result = service.getAccountServiceDAO().register(name, email, password);
+        UserProfile result = service.getAccountServiceDAO().register(name, email, password);
         final Message backMsg = new MsgFrnRegistered(
                 this.getTo(),
                 this.getFrom(),
