@@ -10,7 +10,16 @@
 
         var myName = "${name}";
         var enemyName = "";
-
+        
+        var time = null;
+        var timeout = null;
+        
+        function timer(){
+            if(time==0) return
+            document.getElementById("time_of_game").innerHTML = time--;
+            clearTimeout(timeout);
+        }
+        
         init = function () {
             ws = new WebSocket("ws://${host_game}:${port_game}${url_game}");
 
@@ -27,7 +36,11 @@
                     document.getElementById("mychat").style.display = "block";
 
                     document.getElementById("time_of_game").innerHTML = data.time_of_game;
+                    time = data.time_of_game;
+                    
                     //document.getElementById("enemyName").innerHTML = data.enemyName;
+                    
+                    timeout = setTimeout(timer, 1000);
 
                     console.log("Start: Пришло количество игроков: "+data.players.length);
                     console.log("Их список: ");
@@ -44,6 +57,10 @@
 
 
                    document.getElementById("win").innerHTML = data.win;
+                }
+                
+                if(data.status == "newfruit"){
+                    document.getElementById("debug").innerHTML = data.info;
                 }
 
                 if(data.status == "scores"){
@@ -114,6 +131,10 @@
                 <form name="gamePlay" action="">
                     <input type="button" name="submit" value="Press to win!" onclick="sendMessage();"/>
                 </form>
+                
+                <div id="debug">
+                    
+                </div>
             </div>
 
             <div id="gameOver" style="display: none">
