@@ -15,9 +15,8 @@
         var timeout = null;
         
         function timer(){
-            if(time==0) return
+            if(time == 0) clearTimeout(timeout);
             document.getElementById("time_of_game").innerHTML = time--;
-            clearTimeout(timeout);
         }
         
         init = function () {
@@ -36,7 +35,7 @@
                     document.getElementById("mychat").style.display = "block";
 
                     document.getElementById("time_of_game").innerHTML = data.time_of_game;
-                    time = data.time_of_game;
+                    time = +data.time_of_game;
                     
                     //document.getElementById("enemyName").innerHTML = data.enemyName;
                     
