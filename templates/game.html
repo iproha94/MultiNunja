@@ -15,7 +15,11 @@
         var timeout = null;
         
         function timer(){
-            if(time == 0) clearTimeout(timeout);
+            console.log("timer : ",time);
+            if(time == 0){
+                console.log("clearTimeout");
+                clearTimeout(timeout);
+            }
             document.getElementById("time_of_game").innerHTML = time--;
         }
         
@@ -29,17 +33,18 @@
             ws.onmessage = function (event) {
                 var data = JSON.parse(event.data);
                 if(data.status == "start"){
-                    alert( "Старт игры" );
-                    document.getElementById("wait").style.display = "none";
-                    document.getElementById("gameplay").style.display = "block";
-                    document.getElementById("mychat").style.display = "block";
-
                     document.getElementById("time_of_game").innerHTML = data.time_of_game;
                     time = +data.time_of_game;
                     
                     //document.getElementById("enemyName").innerHTML = data.enemyName;
                     
-                    timeout = setTimeout(timer, 1000);
+                    timeout = setInterval(timer, 1000);
+                    console.log( "Старт игры" );
+                    document.getElementById("wait").style.display = "none";
+                    document.getElementById("gameplay").style.display = "block";
+                    document.getElementById("mychat").style.display = "block";
+
+
 
                     console.log("Start: Пришло количество игроков: "+data.players.length);
                     console.log("Их список: ");
