@@ -1,6 +1,7 @@
 package com.wordpress.ilyaps.services.gamemechService;
 
-import com.wordpress.ilyaps.services.accountService.message.MsgAccScore;
+import com.wordpress.ilyaps.services.accountService.message.MsgAccAddScore;
+import com.wordpress.ilyaps.services.accountService.message.MsgAccGetScore;
 import com.wordpress.ilyaps.services.socketsService.message.MsgSckSendData;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
@@ -175,9 +176,9 @@ public abstract class GamemechServiceImpl implements GamemechService {
         for (GameUser user : session.getGameUsers()) {
             sendData(user.getName(), message);
 
-            Message msg = new MsgAccScore(
+            Message msg = new MsgAccAddScore(
                     getAddress(),
-                    messageSystem.getAddressService().getServletsServiceAddress(),
+                    messageSystem.getAddressService().getAccountServiceAddress(),
                     user.getName(),
                     user.getScore()
             );

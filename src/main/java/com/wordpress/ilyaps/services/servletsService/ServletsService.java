@@ -21,8 +21,16 @@ public interface ServletsService extends Abonent, Runnable {
 
     void leaveUser(String email, String sessionId);
 
-    UserState checkState(String email);
+    UserState checkUserState(String email);
 
     UserProfile getUser(String sessionId);
+
+    void gettingScore(String sessionId, String result);
+
+    void gettingScoreUser(String sessionId, int start, int amount);
+
+    ScoreState checkScoreState(String sessionId);
+
+    String getScore(String sessionId);
 
 }

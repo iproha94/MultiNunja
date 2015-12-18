@@ -69,7 +69,7 @@ public class RegisterServlet extends HttpServlet {
         String nameInSession = (String) request.getSession().getAttribute("name");
 
         Map<String, Object> pageVariables = new HashMap<>();
-        UserState state = feService.checkState(email);
+        UserState state = feService.checkUserState(email);
 
 
         if (checkNameInSession(pageVariables, nameInSession) &&

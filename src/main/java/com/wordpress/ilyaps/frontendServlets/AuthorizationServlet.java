@@ -70,7 +70,7 @@ public class AuthorizationServlet extends HttpServlet {
         String sessionId = request.getSession().getId();
 
         Map<String, Object> pageVariables = new HashMap<>();
-        UserState state = feService.checkState(email);
+        UserState state = feService.checkUserState(email);
 
         if (state == UserState.SUCCESSFUL_AUTHORIZED) {
             LOGGER.info("successful authorization");

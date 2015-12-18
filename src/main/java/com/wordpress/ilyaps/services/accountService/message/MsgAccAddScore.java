@@ -1,19 +1,19 @@
 package com.wordpress.ilyaps.services.accountService.message;
 
-import com.wordpress.ilyaps.services.accountService.AccountService;
 import com.wordpress.ilyaps.messageSystem.Address;
+import com.wordpress.ilyaps.services.accountService.AccountService;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by ilya on 13.12.15.
+ * Created by ilya on 19.12.15.
  */
-public class MsgAccScore extends MsgToAccountService {
+public class MsgAccAddScore extends MsgToAccountService {
     @NotNull
     private String name;
 
     private int score;
 
-    public MsgAccScore(
+    public MsgAccAddScore(
             @NotNull Address from,
             @NotNull Address to,
             @NotNull String name,

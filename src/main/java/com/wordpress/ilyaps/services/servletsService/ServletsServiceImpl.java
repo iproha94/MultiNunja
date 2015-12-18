@@ -5,11 +5,11 @@ import com.wordpress.ilyaps.services.accountService.UserProfile;
 import com.wordpress.ilyaps.services.accountService.message.MsgAccAuthorization;
 import com.wordpress.ilyaps.services.accountService.message.MsgAccLeaving;
 import com.wordpress.ilyaps.services.accountService.message.MsgAccRegister;
-import com.wordpress.ilyaps.services.socketsService.SocketsService;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
 import com.wordpress.ilyaps.serverHelpers.GameContext;
+import com.wordpress.ilyaps.services.accountService.message.MsgAccGetScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +33,10 @@ public class ServletsServiceImpl implements ServletsService {
     private final Map<String, UserProfile> sessionToProfile = new HashMap<>();
     @NotNull
     private final Map<String, UserState> emailToState = new HashMap<>();
+    @NotNull
+    private final Map<String, String> sessionToScores = new HashMap<>();
+    @NotNull
+    private final Map<String, ScoreState> sessionToScoreState = new HashMap<>();
 
     public ServletsServiceImpl() {
         GameContext gameContext = GameContext.getInstance();
@@ -44,7 +48,7 @@ public class ServletsServiceImpl implements ServletsService {
 
     @Override
     public void registerUser(String name, String email, String password) {
-        UserState state = checkState(email);
+        UserState state = checkUserState(email);
         if (state == UserState.SUCCESSFUL_REGISTERED ||
                 state == UserState.SUCCESSFUL_AUTHORIZED) {
             LOGGER.warn("user " + email + " with status = " + state + " wants to register");
@@ -116,7 +120,7 @@ public class ServletsServiceImpl implements ServletsService {
     }
     @Override
     @NotNull
-    public UserState checkState(String email) {
+    public UserState checkUserState(String email) {
         if (emailToState.get(email) == null) {
             emailToState.put(email, UserState.LEFT);
         }
@@ -128,6 +132,40 @@ public class ServletsServiceImpl implements ServletsService {
         return sessionToProfile.get(sessionId);
     }
 
+    @Override
+    public void gettingScore(String sessionId, String result) {
+        if (result == null) {
+            sessionToScoreState.put(sessionId, ScoreState.UNSUCCESSFUL);
+        } else {
+            sessionToScoreState.put(sessionId, ScoreState.SUCCESSFUL);
+            sessionToScores.put(sessionId, result);
+        }
+    }
+
+    @Override
+    public void gettingScoreUser(String sessionId, int start, int amount) {
+        Message msg = new MsgAccGetScore(
+                getAddress(),
+                messageSystem.getAddressService().getAccountServiceAddress(),
+                sessionId,
+                start,
+                amount
+        );
+        messageSystem.sendMessage(msg);
+        sessionToScoreState.put(sessionId, ScoreState.PENDING);
+    }
+
+    @Override
+    public ScoreState checkScoreState(String sessionId) {
+        return sessionToScoreState.get(sessionId);
+    }
+
+    @Override
+    public String getScore(String sessionId) {
+        String score = sessionToScores.get(sessionId);
+        sessionToScoreState.remove(sessionId);
+        return score;
+    }
 
     @NotNull
     @Override

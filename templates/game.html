@@ -57,10 +57,12 @@
                 if(data.status == "finish"){
                    alert( "финиш игры");
                    document.getElementById("gameOver").style.display = "block";
-                   document.getElementById("gameplay").style.display = "none";
+                   //document.getElementById("gameplay").style.display = "none";
+                    for(i=0;i<data.players.length;i++){
+                    	$("#"+data.players[i].name).html(data.players[i].name+ " : "+data.players[i].score);
+                    }
 
-
-                   document.getElementById("win").innerHTML = data.players;
+                   document.getElementById("win").innerHTML = "who to win";
                 }
                 
                 if(data.status == "newfruit"){

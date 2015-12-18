@@ -56,7 +56,7 @@ public class LeavingServlet extends HttpServlet {
                 return;
             }
 
-            UserState state = feService.checkState(profile.getEmail());
+            UserState state = feService.checkUserState(profile.getEmail());
 
             if (state == UserState.LEFT) {
                 LOGGER.info("successful leaving");

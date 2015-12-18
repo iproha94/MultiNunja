@@ -23,4 +23,7 @@ public interface AccountServiceDAO {
     UserProfile getAuthorizedUser(@NotNull String sessionId);
 
     void addScore(@NotNull String name, int score);
+
+    @NotNull
+    String getScore(int start, int amount);
 }

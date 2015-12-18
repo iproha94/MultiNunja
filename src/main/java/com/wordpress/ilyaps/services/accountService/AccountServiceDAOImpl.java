@@ -1,9 +1,13 @@
 package com.wordpress.ilyaps.services.accountService;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,6 +18,9 @@ public class AccountServiceDAOImpl implements AccountServiceDAO {
     private final Map<String, UserProfile> users = new HashMap<>();
     @NotNull
     private final Map<String, UserProfile> sessions = new HashMap<>();
+    @NotNull
+    private final List<Score> listScores = new ArrayList<>();
+
 
 
     @Override
@@ -59,6 +66,29 @@ public class AccountServiceDAOImpl implements AccountServiceDAO {
 
     @Override
     public void addScore(@NotNull String name, int score) {
+        listScores.add(new Score(name, score));
+    }
 
+    @NotNull
+    @Override
+    public String getScore(int start, int amount) {
+        JsonObject result = new JsonObject();
+        result.addProperty("status", 200);
+
+        int i = 0;
+        JsonArray arr = new JsonArray();
+        for (Score score : listScores) {
+            i++;
+            JsonObject guser = new JsonObject();
+            guser.addProperty("name", score.getName());
+            guser.addProperty("score", score.getScore());
+            arr.add(guser);
+            if (i > amount) {
+                break;
+            }
+        }
+        result.add("players", arr);
+
+        return result.toString();
     }
 }
