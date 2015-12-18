@@ -40,10 +40,18 @@ public class GameMessageCreator {
     }
 
     @NotNull
-    public static String createMessageGameOver(@NotNull String nameWinner) {
+    public static String createMessageGameOver(@NotNull GameSession gameSession) {
         JsonObject result = new JsonObject();
-        result.addProperty("status", "finish");
-        result.addProperty("win", nameWinner);
+        result.addProperty("status", "scores");
+
+        JsonArray arr = new JsonArray();
+        for (GameUser player : gameSession.getGameUsers()) {
+            JsonObject guser = new JsonObject();
+            guser.addProperty("name", player.getName());
+            guser.addProperty("score", player.getScore());
+            arr.add(guser);
+        }
+        result.add("players", arr);
 
         return result.toString();
     }

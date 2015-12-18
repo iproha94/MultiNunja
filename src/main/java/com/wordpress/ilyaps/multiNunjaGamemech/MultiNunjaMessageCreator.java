@@ -49,4 +49,13 @@ public class MultiNunjaMessageCreator {
 
         return result.toString();
     }
+
+    public static String enemyShot(String name, int fruitId) {
+        JsonObject result = new JsonObject();
+        result.addProperty("status", "enemyshot");
+        result.addProperty("name", name);
+        result.addProperty("id", fruitId);
+
+        return result.toString();
+    }
 }

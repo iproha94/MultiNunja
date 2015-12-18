@@ -1,4 +1,4 @@
-<class type='com.wordpress.ilyaps.resourceSystem.GMResource'>
+<class type='com.wordpress.ilyaps.gamemechService.GMResource'>
     <stepTime>100</stepTime>
     <gameTime>30000</gameTime>
     <numberPlayers>2</numberPlayers>

@@ -5,8 +5,6 @@ import com.wordpress.ilyaps.frontendService.message.MsgFrnSendData;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
-import com.wordpress.ilyaps.multiNunjaGamemech.MultiNunjaGamemech;
-import com.wordpress.ilyaps.resourceSystem.GMResource;
 import com.wordpress.ilyaps.resourceSystem.ResourcesContext;
 import com.wordpress.ilyaps.serverHelpers.GameContext;
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +42,7 @@ public abstract class GamemechServiceImpl implements GamemechService {
         ResourcesContext resourcesContext = (ResourcesContext) gameContext.get(ResourcesContext.class);
         this.gMResource = (GMResource) resourcesContext.get(GMResource.class);
     }
+
 
     @Override
     @NotNull
@@ -170,8 +169,7 @@ public abstract class GamemechServiceImpl implements GamemechService {
     }
 
     private void finishGame(@NotNull GameSession session) {
-        String nameWinner = session.getNameWinner();
-        String message = GameMessageCreator.createMessageGameOver(nameWinner);
+        String message = GameMessageCreator.createMessageGameOver(session);
         LOGGER.info("finish game");
 
         for (GameUser user : session.getGameUsers()) {

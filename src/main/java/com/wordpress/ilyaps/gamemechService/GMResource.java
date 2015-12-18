@@ -1,4 +1,6 @@
-package com.wordpress.ilyaps.resourceSystem;
+package com.wordpress.ilyaps.gamemechService;
+
+import com.wordpress.ilyaps.resourceSystem.Resource;
 
 /**
  * Created by ilya on 01.11.15.

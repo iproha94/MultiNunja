@@ -1,0 +1,4 @@
+<class type='com.wordpress.ilyaps.multiNunjaGamemech.MultiNunjaResource'>
+    <maxFruit>1000</maxFruit>
+    <periodGenerate>300</periodGenerate>
+</class>

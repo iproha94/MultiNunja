@@ -5,6 +5,8 @@ import com.google.gson.JsonParser;
 import com.wordpress.ilyaps.gamemechService.GameSession;
 import com.wordpress.ilyaps.gamemechService.GameUser;
 import com.wordpress.ilyaps.gamemechService.GamemechServiceImpl;
+import com.wordpress.ilyaps.resourceSystem.ResourcesContext;
+import com.wordpress.ilyaps.serverHelpers.GameContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -22,12 +24,22 @@ public class MultiNunjaGamemech extends GamemechServiceImpl {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(MultiNunjaGamemech.class);
 
-    private int maxFruit = 1000;
+    private MultiNunjaResource multiNunjaResource;
+
+    private int maxFruit;
     private int pointerFruit = 0;
     private List<Fruit> fruitList = new ArrayList<>(maxFruit);
 
 
     public MultiNunjaGamemech() {
+
+        GameContext gameContext = GameContext.getInstance();
+        ResourcesContext resourcesContext = (ResourcesContext) gameContext.get(ResourcesContext.class);
+        this.multiNunjaResource = (MultiNunjaResource) resourcesContext.get(MultiNunjaResource.class);
+
+        maxFruit = multiNunjaResource.getMaxFruit();
+        int periodGenerate = multiNunjaResource.getPeriodGenerate();
+
         for (int i = 0; i < maxFruit; ++i) {
             Fruit fruit = new Fruit();
             fruit.generateFruit(i);
@@ -35,7 +47,7 @@ public class MultiNunjaGamemech extends GamemechServiceImpl {
         }
 
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(this::generateFruit, 0, 2, TimeUnit.SECONDS);
+        service.scheduleAtFixedRate(this::generateFruit, 0, periodGenerate, TimeUnit.MILLISECONDS);
     }
 
     public void generateFruit() {
@@ -57,6 +69,13 @@ public class MultiNunjaGamemech extends GamemechServiceImpl {
 
         String status = jsonObj.get("status").getAsString();
 
+        if ("myshot".equals(status)) {
+            int fruitId = jsonObj.get("id").getAsInt();
+            LOGGER.info("myshot фрукта id = " + fruitId + " от игрока " + name);
+            myShot(name, fruitId);
+            return;
+        }
+
         if ("increment".equals(status)) {
             incrementScore(name);
             return;
@@ -65,6 +84,28 @@ public class MultiNunjaGamemech extends GamemechServiceImpl {
         if ("message".equals(status)) {
             String text = jsonObj.get("text").getAsString();
             textInChat(name, text);
+            return;
+        }
+    }
+
+    private void myShot(String name, int fruitId) {
+        GameSession gameSession = getNameToGame().get(name);
+        if (gameSession == null) {
+            LOGGER.warn("userGameSession == null");
+            return;
+        }
+
+        GameUser gameUser = gameSession.getGameUser(name);
+        if (gameUser == null) {
+            LOGGER.warn("gameUser == null");
+            return;
+        }
+
+        gameUser.incrementScore();
+
+        String message = MultiNunjaMessageCreator.enemyShot(name, fruitId);
+        for (GameUser user : gameSession.getGameUsers()) {
+            sendData(user.getName(), message);
         }
     }
 
