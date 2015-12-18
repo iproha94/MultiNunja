@@ -64,7 +64,9 @@
                 }
                 
                 if(data.status == "newfruit"){
-                    document.getElementById("debug").innerHTML = data.info;
+                    document.getElementById("debug1").innerHTML = data.koef;
+                    document.getElementById("debug2").innerHTML = data.id;
+
                 }
 
                 if(data.status == "scores"){
@@ -136,8 +138,12 @@
                     <input type="button" name="submit" value="Press to win!" onclick="sendMessage();"/>
                 </form>
                 
-                <div id="debug">
-                    
+                <div id="debug1">
+
+                </div>
+
+                <div id="debug2">
+
                 </div>
             </div>
 

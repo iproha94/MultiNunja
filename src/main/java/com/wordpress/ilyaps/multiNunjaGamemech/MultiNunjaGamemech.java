@@ -9,7 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,15 +22,26 @@ public class MultiNunjaGamemech extends GamemechServiceImpl {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(MultiNunjaGamemech.class);
 
-    private Random rand = new Random();
+    private int maxFruit = 1000;
+    private int pointerFruit = 0;
+    private List<Fruit> fruitList = new ArrayList<>(maxFruit);
+
 
     public MultiNunjaGamemech() {
+        for (int i = 0; i < maxFruit; ++i) {
+            Fruit fruit = new Fruit();
+            fruit.generateFruit(i);
+            fruitList.add(fruit);
+        }
+
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(this::generateFruit, 0, 2, TimeUnit.SECONDS);
     }
 
     public void generateFruit() {
-        String message = MultiNunjaMessageCreator.newFruit(rand.nextInt(100));
+        pointerFruit++;
+        pointerFruit %= maxFruit;
+        String message = MultiNunjaMessageCreator.newFruit(fruitList.get(pointerFruit));
         for (GameSession session : getAllSessions()) {
             for (GameUser user : session.getGameUsers()) {
                 sendData(user.getName(), message);

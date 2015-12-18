@@ -36,10 +36,16 @@ public class MultiNunjaMessageCreator {
         return result.toString();
     }
 
-    public static String newFruit(int info) {
+    public static String newFruit(Fruit fruit) {
         JsonObject result = new JsonObject();
         result.addProperty("status", "newfruit");
-        result.addProperty("info", info);
+        result.addProperty("id", fruit.getId());
+
+        JsonArray arr = new JsonArray();
+        arr.add(fruit.getA());
+        arr.add(fruit.getB());
+        arr.add(fruit.getC());
+        result.add("koef", arr);
 
         return result.toString();
     }
