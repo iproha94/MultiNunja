@@ -10,15 +10,17 @@ import com.wordpress.ilyaps.messageSystem.Address;
 public class MsgFrnLeft extends MsgToFrontendService {
     private String sessionId;
     private UserProfile profile;
+    private String email;
 
-    public MsgFrnLeft(Address from, Address to, String sessionId, UserProfile profile) {
+    public MsgFrnLeft(Address from, Address to, String email, String sessionId, UserProfile profile) {
         super(from, to);
         this.sessionId = sessionId;
         this.profile = profile;
+        this.email = email;
     }
 
     @Override
     protected void exec(FrontendService service) {
-        service.left(sessionId, profile);
+        service.left(email, sessionId, profile);
     }
 }

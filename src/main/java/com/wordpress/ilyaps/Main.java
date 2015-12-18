@@ -10,7 +10,6 @@ import com.wordpress.ilyaps.frontendServlets.*;
 import com.wordpress.ilyaps.frontendSockets.WebSocketService;
 import com.wordpress.ilyaps.frontendSockets.WebSocketServiceImpl;
 import com.wordpress.ilyaps.gamemechService.GamemechService;
-import com.wordpress.ilyaps.gamemechService.GamemechServiceImpl;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
 import com.wordpress.ilyaps.multiNunjaGamemech.MultiNunjaGamemech;
 import com.wordpress.ilyaps.resourceSystem.ResourcesContext;
@@ -83,7 +82,7 @@ public class Main {
         Servlet signIn = new AuthorizationServlet(frontendService);
         Servlet logout = new LeavingServlet(frontendService);
         Servlet admin = new AdminpageServlet(frontendService, server);
-        WebSocketServlet game = new GameWebSocketServlet(frontendService);
+        WebSocketServlet game = new GameServlet(frontendService);
         Servlet scores = new ScoresServlet(frontendService);
 
         final ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);

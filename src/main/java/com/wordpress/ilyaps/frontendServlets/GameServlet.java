@@ -22,13 +22,13 @@ import java.util.Map;
 /**
  * Created by ilya on 27.10.15.
  */
-public class GameWebSocketServlet extends WebSocketServlet {
+public class GameServlet extends WebSocketServlet {
     @NotNull
-    static final Logger LOGGER = LogManager.getLogger(GameWebSocketServlet.class);
+    static final Logger LOGGER = LogManager.getLogger(GameServlet.class);
     @NotNull
     private FrontendService feService;
 
-    public GameWebSocketServlet(@NotNull FrontendService feService) {
+    public GameServlet(@NotNull FrontendService feService) {
         this.feService = feService;
     }
 

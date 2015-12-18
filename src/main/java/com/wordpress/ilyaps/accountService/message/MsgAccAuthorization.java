@@ -34,7 +34,7 @@ public class MsgAccAuthorization extends MsgToAccountService {
     @Override
     protected void exec(AccountService service) {
         final UserProfile profile = service.getAccountServiceDAO().authorization(sessionId, email, password);
-        final Message msg = new MsgFrnAuthorized(getTo(), getFrom(), sessionId, profile);
+        final Message msg = new MsgFrnAuthorized(getTo(), getFrom(), email, sessionId, profile);
         service.sendMessage(msg);
     }
 }

@@ -31,11 +31,11 @@ public class AccountServiceImpl implements AccountService {
 
         this.accountServiceDAO = accountServiceDAO;
 
-        accountServiceDAO.register("Egor","test1@mail.ru","123");
-        accountServiceDAO.register("Ilya","test2@mail.ru","123");
-        accountServiceDAO.register("Jenya","test3@mail.ru","123");
-        accountServiceDAO.register("Dmitriy","test4@mail.ru","123");
-        accountServiceDAO.register("Konstantin","test5@mail.ru","123");
+        accountServiceDAO.register("Egor","test1@mail.ru","1234");
+        accountServiceDAO.register("Ilya","test2@mail.ru","1234");
+        accountServiceDAO.register("Jenya","test3@mail.ru","1234");
+        accountServiceDAO.register("Dmitriy","test4@mail.ru","1234");
+        accountServiceDAO.register("Konstantin","test5@mail.ru","1234");
     }
 
     @Override

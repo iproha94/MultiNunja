@@ -29,22 +29,7 @@ public class GameWebSocketCreator implements WebSocketCreator {
     public Object createWebSocket(ServletUpgradeRequest req, ServletUpgradeResponse resp) {
         String sessionId = req.getHttpServletRequest().getSession().getId();
 
-        feService.gettingUserProfile(sessionId);
-
-        while (!feService.endedGettingUserProfile(sessionId)) {
-            LOGGER.info("ждем окончание getting");
-            try {
-                synchronized (this) {
-                    this.wait(ThreadSettings.SLEEP_TIME);
-                }
-            } catch (InterruptedException e) {
-                LOGGER.error("wait потока сервлета");
-                LOGGER.error(e);
-            }
-        }
-        LOGGER.info("getting закончился");
-
-        UserProfile profile = feService.successfulGettingUserProfile(sessionId);
+        UserProfile profile = feService.getUser(sessionId);
 
         return new GameWebSocket(feService, profile.getName());
     }

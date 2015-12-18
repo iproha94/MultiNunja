@@ -3,6 +3,7 @@ package com.wordpress.ilyaps.frontendServlets;
 import com.wordpress.ilyaps.ThreadSettings;
 import com.wordpress.ilyaps.accountService.UserProfile;
 import com.wordpress.ilyaps.frontendService.FrontendService;
+import com.wordpress.ilyaps.frontendService.UserState;
 import com.wordpress.ilyaps.utils.PageGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +23,7 @@ import java.util.Map;
  */
 public class LeavingServlet extends HttpServlet {
     private static final int STATUSTEAPOT = 418;
+    private static final String INCOGNITTO = "Incognitto";
 
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
@@ -40,40 +42,36 @@ public class LeavingServlet extends HttpServlet {
         response.setCharacterEncoding("utf-8");
         response.setContentType("text/html;charset=utf-8");
 
+        String nameInSession = (String) request.getSession().getAttribute("name");
+        String sessionId = request.getSession().getId();
+
         Map<String, Object> pageVariables = new HashMap<>();
 
-        if (request.getSession().getAttribute("name") == null ||
-                "Incognitto".equals(request.getSession().getAttribute("name"))) {
-            LOGGER.info("куда пошел? ты еще не авторизовался");
-            pageVariables.put("status", STATUSTEAPOT);
-            pageVariables.put("info", "ты еще не авторизован");
-        } else {
-            LOGGER.info("пользователь хочет выйти");
-            LOGGER.info("начинаем leaving");
-            feService.leaving(request.getSession().getId());
+        UserProfile profile = feService.getUser(sessionId);
 
-            while (!feService.endedLeaving(request.getSession().getId())) {
-                LOGGER.info("ждем окончание leaving");
-                try {
-                    synchronized (this) {
-                        this.wait(ThreadSettings.SLEEP_TIME_SERVLET);
-                    }
-                } catch (InterruptedException e) {
-                    LOGGER.error("wait потока сервлета");
-                    LOGGER.error(e);
-                }
+        if (!checkNameInSession(pageVariables, nameInSession)) {
+            LOGGER.info("up button exit");
+        } else {
+            if (profile == null) {
+                LOGGER.warn("profile == null");
+                return;
             }
 
-            UserProfile profile = feService.successfulLeaving(request.getSession().getId());
-            if (profile != null) {
-                LOGGER.info("leaving успешно пройдена");
-                request.getSession().setAttribute("name", "Incognitto");
+            UserState state = feService.checkState(profile.getEmail());
+
+            if (state == UserState.LEFT) {
+                LOGGER.info("successful leaving");
                 pageVariables.put("status", HttpServletResponse.SC_OK);
-                pageVariables.put("info", "возвращайся скорее");
-            } else {
-                LOGGER.warn("фигня на сервере");
-                pageVariables.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                pageVariables.put("info", "фигня на сервере");
+                pageVariables.put("info", "come back soon");
+
+                request.getSession().setAttribute("name", INCOGNITTO);
+            } else if (checkNameInSession(pageVariables, nameInSession) &&
+                    checkState(pageVariables, state))
+            {
+                feService.leaveUser(profile.getEmail(), sessionId);
+
+                pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
+                pageVariables.put("info", "wait completed leaving");
             }
         }
 
@@ -81,5 +79,32 @@ public class LeavingServlet extends HttpServlet {
             pw.println(PageGenerator.getPage("authresponse.txt", pageVariables));
         }
 
+    }
+
+    boolean checkNameInSession(Map<String, Object> pageVariables, String name) {
+        if (name == null || INCOGNITTO.equals(name)) {
+            LOGGER.info("the user is already out");
+            pageVariables.put("status", STATUSTEAPOT);
+            pageVariables.put("info", "you is already out");
+            return false;
+        }
+
+        return true;
+    }
+
+    boolean checkState(Map<String, Object> pageVariables, UserState state) {
+        if (state == UserState.UNSUCCESSFUL_LEFT) {
+            LOGGER.warn("unsuccessful left");
+            pageVariables.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            pageVariables.put("info", "unsuccessful left");
+            return false;
+        } else if (state == UserState.PENDING_LEAVING) {
+            LOGGER.warn("user pands leaving");
+            pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
+            pageVariables.put("info", "your leaving not ready.");
+            return false;
+        }
+
+        return true;
     }
 }
