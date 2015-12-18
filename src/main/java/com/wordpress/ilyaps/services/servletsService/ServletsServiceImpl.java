@@ -22,7 +22,6 @@ import java.util.Map;
  * Created by ilya on 12.12.15.
  */
 public class ServletsServiceImpl implements ServletsService {
-
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(ServletsServiceImpl.class);
     @NotNull
@@ -34,6 +33,14 @@ public class ServletsServiceImpl implements ServletsService {
     private final Map<String, UserProfile> sessionToProfile = new HashMap<>();
     @NotNull
     private final Map<String, UserState> emailToState = new HashMap<>();
+
+    public ServletsServiceImpl() {
+        GameContext gameContext = GameContext.getInstance();
+
+        this.messageSystem = (MessageSystem) gameContext.get(MessageSystem.class);
+        messageSystem.addService(this);
+        messageSystem.getAddressService().registerServletsService(this);
+    }
 
     @Override
     public void registerUser(String name, String email, String password) {
@@ -107,7 +114,6 @@ public class ServletsServiceImpl implements ServletsService {
             emailToState.put(email, UserState.LEFT);
         }
     }
-
     @Override
     @NotNull
     public UserState checkState(String email) {
@@ -121,24 +127,7 @@ public class ServletsServiceImpl implements ServletsService {
     public UserProfile getUser(String sessionId) {
         return sessionToProfile.get(sessionId);
     }
-    //-------------------------------------
-    @NotNull
-    private final SocketsService socketsService;
 
-    public ServletsServiceImpl() {
-        GameContext gameContext = GameContext.getInstance();
-
-        this.messageSystem = (MessageSystem) gameContext.get(MessageSystem.class);
-        messageSystem.addService(this);
-        messageSystem.getAddressService().registerServletsService(this);
-
-        this.socketsService = (SocketsService) gameContext.get(SocketsService.class);
-    }
-
-    //---------------------------------------
-
-
-    //---------------------------------------
 
     @NotNull
     @Override

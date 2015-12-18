@@ -42,7 +42,7 @@ public class GameMessageCreator {
     @NotNull
     public static String createMessageGameOver(@NotNull GameSession gameSession) {
         JsonObject result = new JsonObject();
-        result.addProperty("status", "scores");
+        result.addProperty("status", "finish");
 
         JsonArray arr = new JsonArray();
         for (GameUser player : gameSession.getGameUsers()) {

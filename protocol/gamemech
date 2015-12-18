@@ -1,0 +1,30 @@
+Присылает сервер, когда начинается игра:
+{
+	"status" : "start",
+	"your_name" : "Jenya",
+	"time_of_game" : "60",
+	"players" : [
+		{"name" : "Ilya"},
+		{"name" : "Jenya"},
+		{"name" : "Shubin"}
+	]
+}
+
+Присылает сервер, когда кто то выходит из игры:
+{
+	"status" : "leave",
+	"name" : "Shubin"
+}
+
+Присылает сервер когда конец игры:
+{
+	"status" : "finish",
+	"players" : [
+		{"name" : "Ilya",
+		"score" : "15"},
+		{"name" : "Jenya",
+		"score" : "15"},
+		{"name" : "Shubin",
+		"score" : "999"}
+	]
+}

@@ -26,11 +26,6 @@ public class GameServlet extends WebSocketServlet {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(GameServlet.class);
 
-
-    public GameServlet() {
-
-    }
-
     private static final int IDLE_TIME = 10 * 60 * 1000;
 
     @Override

@@ -21,10 +21,10 @@ public class ScoresServlet extends HttpServlet {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
     @NotNull
-    private ServletsService feService;
+    private ServletsService sckService;
 
-    public ScoresServlet(@NotNull ServletsService feService) {
-        this.feService = feService;
+    public ScoresServlet(@NotNull ServletsService sckService) {
+        this.sckService = sckService;
     }
 
     @Override
