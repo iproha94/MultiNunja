@@ -5,6 +5,7 @@ import com.wordpress.ilyaps.frontendService.message.MsgFrnSendData;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
+import com.wordpress.ilyaps.multiNunjaGamemech.MultiNunjaGamemech;
 import com.wordpress.ilyaps.resourceSystem.GMResource;
 import com.wordpress.ilyaps.resourceSystem.ResourcesContext;
 import com.wordpress.ilyaps.serverHelpers.GameContext;
@@ -17,7 +18,7 @@ import java.util.*;
 /**
  * Created by ilya on 13.12.15.
  */
-public class GamemechServiceImpl implements GamemechService {
+public abstract class GamemechServiceImpl implements GamemechService {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(GamemechServiceImpl.class);
     @NotNull
@@ -32,12 +33,8 @@ public class GamemechServiceImpl implements GamemechService {
     private final Set<GameSession> allSessions = new HashSet<>();
     @NotNull
     private final Set<String> namesPlayers = new HashSet<>();
-    @NotNull
-    private  final SpecificGame specificGame;
 
     public GamemechServiceImpl() {
-        this.specificGame = new GamemechMultiNunja(this);
-
         GameContext gameContext = GameContext.getInstance();
 
         this.messageSystem = (MessageSystem) gameContext.get(MessageSystem.class);
@@ -52,6 +49,12 @@ public class GamemechServiceImpl implements GamemechService {
     @NotNull
     public Map<String, GameSession> getNameToGame() {
         return nameToGame;
+    }
+
+    @Override
+    @NotNull
+    public Set<GameSession> getAllSessions() {
+        return allSessions;
     }
 
     @Override
@@ -94,12 +97,6 @@ public class GamemechServiceImpl implements GamemechService {
             }
         }
     }
-
-    @Override
-    public void receiveData(String name, String data) {
-        specificGame.receiveData(name, data);
-    }
-
 
     @Override
     public void sendData(String name, String data) {

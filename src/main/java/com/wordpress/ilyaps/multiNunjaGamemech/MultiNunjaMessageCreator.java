@@ -1,7 +1,9 @@
-package com.wordpress.ilyaps.gamemechService;
+package com.wordpress.ilyaps.multiNunjaGamemech;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.wordpress.ilyaps.gamemechService.GameSession;
+import com.wordpress.ilyaps.gamemechService.GameUser;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,6 +32,14 @@ public class MultiNunjaMessageCreator {
         result.addProperty("status", "message");
         result.addProperty("name", authorName);
         result.addProperty("text", text);
+
+        return result.toString();
+    }
+
+    public static String newFruit(int info) {
+        JsonObject result = new JsonObject();
+        result.addProperty("status", "newfruit");
+        result.addProperty("info", info);
 
         return result.toString();
     }

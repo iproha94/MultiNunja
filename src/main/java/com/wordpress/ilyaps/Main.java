@@ -12,6 +12,7 @@ import com.wordpress.ilyaps.frontendSockets.WebSocketServiceImpl;
 import com.wordpress.ilyaps.gamemechService.GamemechService;
 import com.wordpress.ilyaps.gamemechService.GamemechServiceImpl;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
+import com.wordpress.ilyaps.multiNunjaGamemech.MultiNunjaGamemech;
 import com.wordpress.ilyaps.resourceSystem.ResourcesContext;
 import com.wordpress.ilyaps.serverHelpers.Configuration;
 import com.wordpress.ilyaps.serverHelpers.GameContext;
@@ -69,7 +70,7 @@ public class Main {
         accountServiceThread.setName("Account Service");
         gameСontext.add(AccountService.class, accountService);
 
-        final GamemechService gamemechService = new GamemechServiceImpl();
+        final GamemechService gamemechService = new MultiNunjaGamemech();
         final Thread gamemechServiceThread = new Thread(gamemechService);
         gamemechServiceThread.setDaemon(true);
         gamemechServiceThread.setName("Gamemech Service");

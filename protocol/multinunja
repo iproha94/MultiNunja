@@ -1,0 +1,22 @@
+от сервера:
+
+// создать новый фрукт
+{
+	status: "newfruit",
+	koef: [int,int,int],
+	id: int
+}
+
+//враг сбил фрукт
+{
+	status: "enemyshot",
+	id: int
+}
+
+от клиента:
+
+//я сбил фрукт
+{
+	status : "myshot",
+	id : int
+}
