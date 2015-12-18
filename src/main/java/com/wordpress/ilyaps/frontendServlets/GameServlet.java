@@ -1,6 +1,6 @@
 package com.wordpress.ilyaps.frontendServlets;
 
-import com.wordpress.ilyaps.frontendService.FrontendService;
+import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.frontendSockets.GameWebSocketCreator;
 import com.wordpress.ilyaps.serverHelpers.Configuration;
 import com.wordpress.ilyaps.serverHelpers.GameContext;
@@ -25,11 +25,10 @@ import java.util.Map;
 public class GameServlet extends WebSocketServlet {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(GameServlet.class);
-    @NotNull
-    private FrontendService feService;
 
-    public GameServlet(@NotNull FrontendService feService) {
-        this.feService = feService;
+
+    public GameServlet() {
+
     }
 
     private static final int IDLE_TIME = 10 * 60 * 1000;
@@ -37,7 +36,7 @@ public class GameServlet extends WebSocketServlet {
     @Override
     public void configure(WebSocketServletFactory factory) {
         factory.getPolicy().setIdleTimeout(IDLE_TIME);
-        factory.setCreator(new GameWebSocketCreator(feService));
+        factory.setCreator(new GameWebSocketCreator());
     }
 
     @Override

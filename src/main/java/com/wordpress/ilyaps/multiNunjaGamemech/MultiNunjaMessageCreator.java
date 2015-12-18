@@ -2,8 +2,8 @@ package com.wordpress.ilyaps.multiNunjaGamemech;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.wordpress.ilyaps.gamemechService.GameSession;
-import com.wordpress.ilyaps.gamemechService.GameUser;
+import com.wordpress.ilyaps.services.gamemechService.GameSession;
+import com.wordpress.ilyaps.services.gamemechService.GameUser;
 import org.jetbrains.annotations.NotNull;
 
 /**

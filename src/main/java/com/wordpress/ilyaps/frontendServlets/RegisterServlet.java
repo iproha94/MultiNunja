@@ -1,9 +1,7 @@
 package com.wordpress.ilyaps.frontendServlets;
 
-import com.wordpress.ilyaps.ThreadSettings;
-import com.wordpress.ilyaps.accountService.UserProfile;
-import com.wordpress.ilyaps.frontendService.FrontendService;
-import com.wordpress.ilyaps.frontendService.UserState;
+import com.wordpress.ilyaps.services.servletsService.ServletsService;
+import com.wordpress.ilyaps.services.servletsService.UserState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -29,9 +27,9 @@ public class RegisterServlet extends HttpServlet {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
     @NotNull
-    private FrontendService feService;
+    private ServletsService feService;
 
-    public RegisterServlet(@NotNull FrontendService feService) {
+    public RegisterServlet(@NotNull ServletsService feService) {
         this.feService = feService;
     }
 

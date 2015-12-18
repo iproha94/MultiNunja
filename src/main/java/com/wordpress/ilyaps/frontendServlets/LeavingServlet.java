@@ -1,9 +1,8 @@
 package com.wordpress.ilyaps.frontendServlets;
 
-import com.wordpress.ilyaps.ThreadSettings;
-import com.wordpress.ilyaps.accountService.UserProfile;
-import com.wordpress.ilyaps.frontendService.FrontendService;
-import com.wordpress.ilyaps.frontendService.UserState;
+import com.wordpress.ilyaps.services.accountService.UserProfile;
+import com.wordpress.ilyaps.services.servletsService.ServletsService;
+import com.wordpress.ilyaps.services.servletsService.UserState;
 import com.wordpress.ilyaps.utils.PageGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,9 +27,9 @@ public class LeavingServlet extends HttpServlet {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
     @NotNull
-    private FrontendService feService;
+    private ServletsService feService;
 
-    public LeavingServlet(@NotNull FrontendService feService) {
+    public LeavingServlet(@NotNull ServletsService feService) {
         this.feService = feService;
     }
 

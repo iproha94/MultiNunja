@@ -1,7 +1,6 @@
 package com.wordpress.ilyaps.frontendSockets;
 
-import com.wordpress.ilyaps.frontendService.FrontendService;
-import com.wordpress.ilyaps.serverHelpers.GameContext;
+import com.wordpress.ilyaps.services.socketsService.SocketsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -24,17 +23,12 @@ public class GameWebSocket {
     @NotNull
     private final String myName;
     @NotNull
-    private final WebSocketService webSocketService;
-    @NotNull
-    private final FrontendService feService;
+    private final SocketsService sckService;
     private Session session;
 
-    public GameWebSocket(@NotNull FrontendService feService, @NotNull String myName) {
+    public GameWebSocket(@NotNull SocketsService sckService, @NotNull String myName) {
         this.myName = myName;
-        this.feService = feService;
-
-        GameContext gameContext = GameContext.getInstance();
-        this.webSocketService = (WebSocketService) gameContext.get(WebSocketService.class);
+        this.sckService = sckService;
     }
 
     @NotNull
@@ -45,16 +39,14 @@ public class GameWebSocket {
     @OnWebSocketConnect
     public void onOpen(@NotNull Session newSession) {
         this.session = newSession;
-        webSocketService.add(this);
-
-
-        feService.openSocket(myName);
+        sckService.add(this);
+        sckService.openSocket(myName);
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        feService.closeSocket(myName);
-        webSocketService.remove(myName);
+        sckService.closeSocket(myName);
+        sckService.remove(myName);
     }
 
     @OnWebSocketMessage
@@ -62,7 +54,7 @@ public class GameWebSocket {
         if (data == null) {
             return;
         }
-        feService.receiveData(myName, data);
+        sckService.receiveData(myName, data);
     }
 
     public void send(String message) {

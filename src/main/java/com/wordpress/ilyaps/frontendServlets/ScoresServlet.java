@@ -1,6 +1,6 @@
 package com.wordpress.ilyaps.frontendServlets;
 
-import com.wordpress.ilyaps.frontendService.FrontendService;
+import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -22,9 +21,9 @@ public class ScoresServlet extends HttpServlet {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
     @NotNull
-    private FrontendService feService;
+    private ServletsService feService;
 
-    public ScoresServlet(@NotNull FrontendService feService) {
+    public ScoresServlet(@NotNull ServletsService feService) {
         this.feService = feService;
     }
 

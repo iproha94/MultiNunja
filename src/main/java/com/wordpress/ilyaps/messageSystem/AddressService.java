@@ -1,22 +1,32 @@
 package com.wordpress.ilyaps.messageSystem;
 
 
-import com.wordpress.ilyaps.accountService.AccountService;
-import com.wordpress.ilyaps.frontendService.FrontendService;
-import com.wordpress.ilyaps.gamemechService.GamemechService;
+import com.wordpress.ilyaps.services.accountService.AccountService;
+import com.wordpress.ilyaps.services.servletsService.ServletsService;
+import com.wordpress.ilyaps.services.gamemechService.GamemechService;
+import com.wordpress.ilyaps.services.socketsService.SocketsService;
 
 public final class AddressService {
-    private Address frontendServiceAddress;
+    private Address servletsServiceAddress;
+    private Address socketsServiceAddress;
     private Address gamemechServiceAddress;
     private Address accountServiceAddress;
 
 
-    public void registerFrontendService(FrontendService frontendService) {
-        this.frontendServiceAddress = frontendService.getAddress();
+    public void registerServletsService(ServletsService servletsService) {
+        this.servletsServiceAddress = servletsService.getAddress();
     }
 
-    public Address getFrontendServiceAddress() {
-        return frontendServiceAddress;
+    public Address getServletsServiceAddress() {
+        return servletsServiceAddress;
+    }
+
+    public void registerSocketsService(SocketsService socketsService) {
+        this.socketsServiceAddress = socketsService.getAddress();
+    }
+
+    public Address getSocketsServiceAddress() {
+        return socketsServiceAddress;
     }
 
     public void registerAccountService(AccountService accountService) {

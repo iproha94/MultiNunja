@@ -1,6 +1,6 @@
 package com.wordpress.ilyaps.frontendServlets;
 
-import com.wordpress.ilyaps.frontendService.FrontendService;
+import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.utils.PageGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,11 +21,11 @@ public class AdminpageServlet extends HttpServlet {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
     @NotNull
-    private FrontendService feService;
+    private ServletsService feService;
     @NotNull
     private final Server server;
 
-    public AdminpageServlet(@NotNull FrontendService feService, @NotNull Server server) {
+    public AdminpageServlet(@NotNull ServletsService feService, @NotNull Server server) {
         this.feService = feService;
         this.server = server;
     }
