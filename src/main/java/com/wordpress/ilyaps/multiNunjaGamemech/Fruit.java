@@ -14,10 +14,14 @@ public class Fruit {
 
 
     public void generateFruit(int id) {
-        a = rand.nextInt(200) - 100;
-        b = rand.nextInt(200) - 100;
-        c = rand.nextInt(200) - 100;
         this.id = id;
+        a = rand.nextInt(200) - 100;
+        b = rand.nextInt(100) - 100;
+        c = rand.nextInt(100);
+
+        if (a > 0) {
+            c *= -1;
+        }
     }
 
     public int getA() {

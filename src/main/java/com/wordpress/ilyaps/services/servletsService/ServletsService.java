@@ -25,4 +25,5 @@ public interface ServletsService extends Abonent, Runnable {
 
     UserProfile getUser(String sessionId);
 
+    void removeAbout(String sessionId, String email);
 }

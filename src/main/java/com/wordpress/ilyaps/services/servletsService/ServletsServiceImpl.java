@@ -104,6 +104,7 @@ public class ServletsServiceImpl implements ServletsService {
         );
         messageSystem.sendMessage(msg);
         emailToState.put(email, UserState.PENDING_LEAVING);
+
     }
 
     @Override
@@ -126,6 +127,12 @@ public class ServletsServiceImpl implements ServletsService {
     @Nullable
     public UserProfile getUser(String sessionId) {
         return sessionToProfile.get(sessionId);
+    }
+
+    @Override
+    public void removeAbout(String sessionId, String email) {
+        sessionToProfile.remove(sessionId);
+        emailToState.remove(email);
     }
 
     @NotNull

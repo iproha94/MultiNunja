@@ -72,9 +72,10 @@ public class AuthorizationServlet extends HttpServlet {
 
         Map<String, Object> pageVariables = new HashMap<>();
         UserState state = feService.checkUserState(email);
+        UserProfile profile = feService.getUser(sessionId);
 
-        if (state == UserState.SUCCESSFUL_AUTHORIZED) {
-            UserProfile profile = feService.getUser(sessionId);
+        if (state == UserState.SUCCESSFUL_AUTHORIZED && profile != null) {
+
             request.getSession().setAttribute("name", profile.getName());
 
             LOGGER.info("successful authorization");
@@ -90,6 +91,10 @@ public class AuthorizationServlet extends HttpServlet {
 
             pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
             pageVariables.put("info", "wait completed autharization");
+        } else {
+            feService.removeAbout(sessionId, email);
+            pageVariables.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            pageVariables.put("info", "user with this email and password not found");
         }
 
         try (PrintWriter pw = response.getWriter()) {
