@@ -1,10 +1,7 @@
-package com.wordpress.ilyaps.services.accountService;
+package com.wordpress.ilyaps.services.accountService.dataset;
 
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Created by v.chibrikov on 13.09.2014.
- */
 public class Score {
     @NotNull
     private String name;
@@ -13,11 +10,6 @@ public class Score {
     public Score(@NotNull String name, int score) {
         this.name = name;
         this.score = score;
-    }
-
-    public Score() {
-        this.name = "";
-        this.score = 0;
     }
 
     public void setName(@NotNull String name) {

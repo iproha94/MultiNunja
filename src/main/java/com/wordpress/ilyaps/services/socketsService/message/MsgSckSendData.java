@@ -1,6 +1,5 @@
 package com.wordpress.ilyaps.services.socketsService.message;
 
-import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.services.socketsService.SocketsService;
 

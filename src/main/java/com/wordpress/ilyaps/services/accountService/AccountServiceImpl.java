@@ -50,19 +50,20 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void run() {
-        LOGGER.info("старт потока");
+        LOGGER.info("start thread");
 
         while (true) {
             messageSystem.execForAbonent(this);
             try {
                 Thread.sleep(ThreadSettings.SLEEP_TIME);
             } catch (InterruptedException e) {
-                LOGGER.error("засыпания потока");
+                LOGGER.error("sleep thread");
                 LOGGER.error(e);
             }
         }
     }
 
+    @NotNull
     @Override
     public AccountServiceDAO getAccountServiceDAO() {
         return accountServiceDAO;

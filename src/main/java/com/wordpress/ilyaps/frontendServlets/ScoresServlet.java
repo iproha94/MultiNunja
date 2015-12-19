@@ -17,7 +17,7 @@ import java.io.PrintWriter;
  */
 public class ScoresServlet extends HttpServlet {
     private static final int DEFAULT_AMOUNT = 10;
-    private static final int DEFAULT_START = 1;
+    private static final int DEFAULT_START = 0;
 
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);

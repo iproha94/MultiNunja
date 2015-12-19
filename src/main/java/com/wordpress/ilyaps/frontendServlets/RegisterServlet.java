@@ -105,12 +105,12 @@ public class RegisterServlet extends HttpServlet {
 
     boolean checkState(Map<String, Object> pageVariables, UserState state) {
         if (state == UserState.UNSUCCESSFUL_REGISTERED) {
-            LOGGER.warn("user with this name or email already exists");
+            LOGGER.info("user with this name or email already exists");
             pageVariables.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             pageVariables.put("info", "user with this name or email already exists");
             return false;
         } else if (state == UserState.PENDING_REGISTRATION) {
-            LOGGER.warn("user pands registration");
+            LOGGER.info("user pands registration");
             pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
             pageVariables.put("info", "your registration not ready.");
             return false;

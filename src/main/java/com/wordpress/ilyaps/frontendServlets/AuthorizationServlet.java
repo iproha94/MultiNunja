@@ -1,6 +1,6 @@
 package com.wordpress.ilyaps.frontendServlets;
 
-import com.wordpress.ilyaps.services.accountService.UserProfile;
+import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.services.servletsService.UserState;
 import com.wordpress.ilyaps.utils.PageGenerator;
@@ -49,6 +49,7 @@ public class AuthorizationServlet extends HttpServlet {
 
         try (PrintWriter pw = response.getWriter()) {
             if (checkNameInSession(pageVariables, nameInSession)) {
+                //feService.
                 pw.println(PageGenerator.getPage("auth/signin.html", pageVariables));
             } else {
                 pw.println(PageGenerator.getPage("authresponse.txt", pageVariables));
@@ -109,12 +110,12 @@ public class AuthorizationServlet extends HttpServlet {
 
     boolean checkState(Map<String, Object> pageVariables, UserState state) {
         if (state == UserState.UNSUCCESSFUL_AUTHORIZED) {
-            LOGGER.warn("user with this email and password not found");
+            LOGGER.info("user with this email and password not found");
             pageVariables.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             pageVariables.put("info", "user with this email and password not found");
             return false;
         } else if (state == UserState.PENDING_AUTHORIZATION) {
-            LOGGER.warn("user pands authorization");
+            LOGGER.info("user pands authorization");
             pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
             pageVariables.put("info", "your authorization not ready.");
             return false;

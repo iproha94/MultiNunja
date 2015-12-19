@@ -1,7 +1,7 @@
 package com.wordpress.ilyaps.services.accountService.message;
 
 import com.wordpress.ilyaps.services.accountService.AccountService;
-import com.wordpress.ilyaps.services.accountService.UserProfile;
+import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.services.servletsService.message.MsgSrvRegistered;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;

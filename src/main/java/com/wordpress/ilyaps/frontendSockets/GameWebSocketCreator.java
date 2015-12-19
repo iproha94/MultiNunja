@@ -1,6 +1,6 @@
 package com.wordpress.ilyaps.frontendSockets;
 
-import com.wordpress.ilyaps.services.accountService.UserProfile;
+import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.serverHelpers.GameContext;
 import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.services.socketsService.SocketsService;

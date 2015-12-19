@@ -2,6 +2,8 @@ package com.wordpress.ilyaps.services.accountService;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.wordpress.ilyaps.services.accountService.dataset.Score;
+import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +15,7 @@ import java.util.Map;
 /**
  * Created by ilya on 12.12.15.
  */
-public class AccountServiceDAOImpl implements AccountServiceDAO {
+public class AccountServiceDAOMemory implements AccountServiceDAO {
     @NotNull
     private final Map<String, UserProfile> users = new HashMap<>();
     @NotNull

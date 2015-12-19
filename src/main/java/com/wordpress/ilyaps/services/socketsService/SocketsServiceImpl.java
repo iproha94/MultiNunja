@@ -64,7 +64,13 @@ public class SocketsServiceImpl implements SocketsService {
 
     @Override
     public void sendData(String name, String data) {
-        notify(name, data);
+        GameWebSocket gameWebSocket = userSockets.get(name);
+        if (gameWebSocket == null) {
+            LOGGER.error("gameWebSocket == null");
+            return;
+        }
+
+        gameWebSocket.send(data);
     }
 
 
@@ -76,17 +82,6 @@ public class SocketsServiceImpl implements SocketsService {
     @Override
     public boolean remove(@NotNull String name) {
         return userSockets.remove(name) != null;
-    }
-
-    @Override
-    public void notify(@NotNull String userName, @NotNull String message) {
-        GameWebSocket gameWebSocket = userSockets.get(userName);
-        if (gameWebSocket == null) {
-            LOGGER.error("gameWebSocket == null");
-            return;
-        }
-
-        gameWebSocket.send(message);
     }
 
     public SocketsServiceImpl() {
@@ -109,14 +104,14 @@ public class SocketsServiceImpl implements SocketsService {
 
     @Override
     public void run() {
-        LOGGER.info("старт потока");
+        LOGGER.info("start thread");
 
         while (true) {
             messageSystem.execForAbonent(this);
             try {
                 Thread.sleep(ThreadSettings.SLEEP_TIME);
             } catch (InterruptedException e) {
-                LOGGER.error("засыпания потока");
+                LOGGER.error("sleep thread");
                 LOGGER.error(e);
             }
         }

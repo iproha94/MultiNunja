@@ -1,6 +1,6 @@
 package com.wordpress.ilyaps.frontendServlets;
 
-import com.wordpress.ilyaps.services.accountService.UserProfile;
+import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.services.servletsService.UserState;
 import com.wordpress.ilyaps.utils.PageGenerator;
@@ -48,9 +48,7 @@ public class LeavingServlet extends HttpServlet {
 
         UserProfile profile = feService.getUser(sessionId);
 
-        if (!checkNameInSession(pageVariables, nameInSession)) {
-            LOGGER.info("up button exit");
-        } else {
+        if (checkNameInSession(pageVariables, nameInSession)) {
             if (profile == null) {
                 LOGGER.warn("profile == null");
                 return;
@@ -93,12 +91,12 @@ public class LeavingServlet extends HttpServlet {
 
     boolean checkState(Map<String, Object> pageVariables, UserState state) {
         if (state == UserState.UNSUCCESSFUL_LEFT) {
-            LOGGER.warn("unsuccessful left");
+            LOGGER.info("unsuccessful left");
             pageVariables.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             pageVariables.put("info", "unsuccessful left");
             return false;
         } else if (state == UserState.PENDING_LEAVING) {
-            LOGGER.warn("user pands leaving");
+            LOGGER.info("user pands leaving");
             pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
             pageVariables.put("info", "your leaving not ready.");
             return false;

@@ -6,10 +6,7 @@ import com.wordpress.ilyaps.multiNunjaGamemech.MultiNunjaGamemech;
 import com.wordpress.ilyaps.resourceSystem.ResourcesContext;
 import com.wordpress.ilyaps.serverHelpers.Configuration;
 import com.wordpress.ilyaps.serverHelpers.GameContext;
-import com.wordpress.ilyaps.services.accountService.AccountService;
-import com.wordpress.ilyaps.services.accountService.AccountServiceDAO;
-import com.wordpress.ilyaps.services.accountService.AccountServiceDAOImpl;
-import com.wordpress.ilyaps.services.accountService.AccountServiceImpl;
+import com.wordpress.ilyaps.services.accountService.*;
 import com.wordpress.ilyaps.services.gamemechService.GamemechService;
 import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.services.servletsService.ServletsServiceImpl;
@@ -34,7 +31,8 @@ import javax.servlet.Servlet;
 public class Main {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(Main.class);
-
+    @NotNull
+    private static final String PROPERTIES_FILE_DB = "cfg/db.properties";
     @NotNull
     private static final String PROPERTIES_FILE = "cfg/server.properties";
 
@@ -64,7 +62,7 @@ public class Main {
         servletsServiceThread.setName("servletsService");
         gameСontext.add(ServletsService.class, servletsService);
 
-        final AccountServiceDAO accountServiceDAO = new AccountServiceDAOImpl();
+        final AccountServiceDAO accountServiceDAO = new AccountServiceDAODB(PROPERTIES_FILE_DB);
         final AccountService accountService = new AccountServiceImpl(accountServiceDAO);
         final Thread accountServiceThread = new Thread(accountService);
         accountServiceThread.setDaemon(true);

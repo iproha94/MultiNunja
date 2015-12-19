@@ -1,6 +1,6 @@
 package com.wordpress.ilyaps.services.servletsService;
 
-import com.wordpress.ilyaps.services.accountService.UserProfile;
+import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.messageSystem.Abonent;
 
 /**

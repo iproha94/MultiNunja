@@ -1,5 +1,6 @@
 package com.wordpress.ilyaps.services.accountService;
 
+import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,5 +29,6 @@ public interface AccountServiceDAO {
     String getScore(int start, int amount);
 
     int countRegisteredUser();
+
     int countAuthorizedUser();
 }

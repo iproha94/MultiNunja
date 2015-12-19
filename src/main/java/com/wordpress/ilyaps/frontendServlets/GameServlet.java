@@ -42,7 +42,7 @@ public class GameServlet extends WebSocketServlet {
 
         String name = (String) request.getSession().getAttribute("name");
         if (name == null || "Incognitto".equals(name)) {
-            LOGGER.warn("name == (null || Incognitto)");
+            LOGGER.info("name == (null || Incognitto)");
             return;
         }
 

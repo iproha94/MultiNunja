@@ -12,7 +12,6 @@ public interface SocketsService extends Abonent, Runnable {
 
     boolean remove(@NotNull String name);
 
-    void notify(@NotNull String userName, @NotNull String message);
 
     void openSocket(String name);
 

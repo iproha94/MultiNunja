@@ -1,7 +1,7 @@
 package com.wordpress.ilyaps.services.servletsService;
 
 import com.wordpress.ilyaps.ThreadSettings;
-import com.wordpress.ilyaps.services.accountService.UserProfile;
+import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.services.accountService.message.MsgAccAuthorization;
 import com.wordpress.ilyaps.services.accountService.message.MsgAccLeaving;
 import com.wordpress.ilyaps.services.accountService.message.MsgAccRegister;
