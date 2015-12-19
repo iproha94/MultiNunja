@@ -26,4 +26,7 @@ public interface AccountServiceDAO {
 
     @NotNull
     String getScore(int start, int amount);
+
+    int countRegisteredUser();
+    int countAuthorizedUser();
 }

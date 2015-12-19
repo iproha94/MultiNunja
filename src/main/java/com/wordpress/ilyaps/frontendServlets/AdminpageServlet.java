@@ -1,10 +1,10 @@
 package com.wordpress.ilyaps.frontendServlets;
 
+import com.wordpress.ilyaps.services.accountService.AccountService;
 import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.utils.PageGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.server.Server;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletException;
@@ -17,33 +17,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AdminpageServlet extends HttpServlet {
-
+    @NotNull
+    static final String PASSWORD = "1489";
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
-    @NotNull
-    private ServletsService feService;
-    @NotNull
-    private final Server server;
 
-    public AdminpageServlet(@NotNull ServletsService feService, @NotNull Server server) {
-        this.feService = feService;
-        this.server = server;
+    @NotNull
+    private AccountService accService;
+
+    public AdminpageServlet(@NotNull AccountService accService) {
+        this.accService = accService;
     }
 
     @Override
     public void doGet(@NotNull HttpServletRequest request,
                       @NotNull HttpServletResponse response) throws ServletException, IOException {
-        LOGGER.info("кто то лезет в админку");
+        String nameInSession = (String) request.getSession().getAttribute("name");
+
+        LOGGER.info(nameInSession + " went to the admin panel");
+
         response.setContentType("text/html;charset=utf-8");
         response.setCharacterEncoding("utf-8");
 
         Map<String, Object> pageVariables = new HashMap<>();
 
         pageVariables.put("status", "run");
-        //pageVariables.put("countUser", accountService.countUsers());
-        //pageVariables.put("countSession", accountService.countSessions());
-        pageVariables.put("countUser", 777);
-        pageVariables.put("countSession", 777);
+        pageVariables.put("countUser", accService.getAccountServiceDAO().countRegisteredUser());
+        pageVariables.put("countSession", accService.getAccountServiceDAO().countAuthorizedUser());
 
         try (PrintWriter pw = response.getWriter()) {
             pw.println(PageGenerator.getPage("admin/admin.html", pageVariables));
@@ -55,30 +55,24 @@ public class AdminpageServlet extends HttpServlet {
         resp.setCharacterEncoding("utf-8");
         resp.setContentType("text/html;charset=utf-8");
 
-        LOGGER.info("кто то пытается потушить сервер");
-        Map<String, Object> pageVariables = new HashMap<>();
-
-
+        String nameInSession = (String) req.getSession().getAttribute("name");
         String password = req.getParameter("password");
 
-        if ("1489".equals(password)) {
-            LOGGER.info("Shutdown server");
-            try {
-                server.stop();
-            } catch (Exception e) {
-                LOGGER.error("ошибка выключения сервера");
-                LOGGER.error(e);
-            }
+        LOGGER.info(nameInSession + " trying to shut down the server");
+        Map<String, Object> pageVariables = new HashMap<>();
 
-            pageVariables.put("status", HttpServletResponse.SC_OK);
-            pageVariables.put("info", "потушил");
-        } else {
+        if (!PASSWORD.equals(password)) {
+            LOGGER.info("not right password for shutdown server");
+
             pageVariables.put("status", HttpServletResponse.SC_BAD_REQUEST);
-            pageVariables.put("info", "не балуйся");
-        }
+            pageVariables.put("info", "not right password");
 
-        try (PrintWriter pw = resp.getWriter()) {
-            pw.println(PageGenerator.getPage("authresponse.txt", pageVariables));
+            try (PrintWriter pw = resp.getWriter()) {
+                pw.println(PageGenerator.getPage("authresponse.txt", pageVariables));
+            }
+        } else {
+            LOGGER.info("Shutdown server successful");
+            System.exit(0);
         }
     }
 }

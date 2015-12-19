@@ -27,10 +27,10 @@ public class RegisterServlet extends HttpServlet {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
     @NotNull
-    private ServletsService feService;
+    private ServletsService srvService;
 
-    public RegisterServlet(@NotNull ServletsService feService) {
-        this.feService = feService;
+    public RegisterServlet(@NotNull ServletsService srvService) {
+        this.srvService = srvService;
     }
 
     @Override
@@ -69,15 +69,19 @@ public class RegisterServlet extends HttpServlet {
         String nameInSession = (String) request.getSession().getAttribute("name");
 
         Map<String, Object> pageVariables = new HashMap<>();
-        UserState state = feService.checkUserState(email);
+        UserState state = srvService.checkUserState(email);
 
 
-        if (checkNameInSession(pageVariables, nameInSession) &&
+        if (state == UserState.SUCCESSFUL_REGISTERED) {
+            LOGGER.info("successful registration");
+            pageVariables.put("status", HttpServletResponse.SC_OK);
+            pageVariables.put("info", email);
+        } else if (checkNameInSession(pageVariables, nameInSession) &&
                 checkState(pageVariables, state) &&
                 checkParameters(pageVariables, name, email, password) )
         {
             LOGGER.info("start registration");
-            feService.registerUser(name, email, password);
+            srvService.registerUser(name, email, password);
 
             pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
             pageVariables.put("info", "wait completed registration");
@@ -100,12 +104,7 @@ public class RegisterServlet extends HttpServlet {
     }
 
     boolean checkState(Map<String, Object> pageVariables, UserState state) {
-        if (state == UserState.SUCCESSFUL_REGISTERED) {
-            LOGGER.info("successful registration");
-            pageVariables.put("status", HttpServletResponse.SC_OK);
-            pageVariables.put("info", "thank you for registration");
-            return false;
-        } else if (state == UserState.UNSUCCESSFUL_REGISTERED) {
+        if (state == UserState.UNSUCCESSFUL_REGISTERED) {
             LOGGER.warn("user with this name or email already exists");
             pageVariables.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             pageVariables.put("info", "user with this name or email already exists");

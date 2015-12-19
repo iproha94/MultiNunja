@@ -103,7 +103,7 @@ public class MultiNunjaGamemech extends GamemechServiceImpl {
 
         gameUser.incrementScore();
 
-        String message = MultiNunjaMessageCreator.enemyShot(name, fruitId);
+        String message = MultiNunjaMessageCreator.enemyShot(name, fruitId, gameSession);
         for (GameUser user : gameSession.getGameUsers()) {
             sendData(user.getName(), message);
         }

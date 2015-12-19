@@ -73,12 +73,13 @@ public class AuthorizationServlet extends HttpServlet {
         UserState state = feService.checkUserState(email);
 
         if (state == UserState.SUCCESSFUL_AUTHORIZED) {
-            LOGGER.info("successful authorization");
-            pageVariables.put("status", HttpServletResponse.SC_OK);
-            pageVariables.put("info", "thank you for authorization");
-
             UserProfile profile = feService.getUser(sessionId);
             request.getSession().setAttribute("name", profile.getName());
+
+            LOGGER.info("successful authorization");
+            pageVariables.put("status", HttpServletResponse.SC_OK);
+            pageVariables.put("info", profile.getName());
+
         } else if (checkNameInSession(pageVariables, nameInSession) &&
                 checkState(pageVariables, state) &&
                 checkParameters(pageVariables, email, password) )

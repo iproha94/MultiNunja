@@ -20,9 +20,23 @@ b поедлить на 50
 
 //кто то сбил фрукт
 {
-	status: "enemyshot"
-	id: int
-	name: ""
+	"status" : "enemyshot",
+	"id" : int,
+	"name" : "",
+	"players" : [
+		{
+			"name" : "Ilya",
+			"score" : "15"
+		},
+		{
+			"name" : "Jenya",
+			"score" : "15"
+		},
+		{
+			"name" : "Shubin",
+			"score" : "999"
+		}
+	]
 }
 
 от клиента:

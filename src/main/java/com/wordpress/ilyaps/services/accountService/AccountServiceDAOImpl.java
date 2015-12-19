@@ -21,8 +21,6 @@ public class AccountServiceDAOImpl implements AccountServiceDAO {
     @NotNull
     private final List<Score> listScores = new ArrayList<>();
 
-
-
     @Override
     @Nullable
     public UserProfile register(@NotNull String name, @NotNull String email, @NotNull String password) {
@@ -90,5 +88,15 @@ public class AccountServiceDAOImpl implements AccountServiceDAO {
         result.add("players", arr);
 
         return result.toString();
+    }
+
+    @Override
+    public int countRegisteredUser() {
+        return users.size();
+    }
+
+    @Override
+    public int countAuthorizedUser() {
+        return sessions.size();
     }
 }

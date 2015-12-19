@@ -1,7 +1,6 @@
 package com.wordpress.ilyaps.services.gamemechService;
 
 import com.wordpress.ilyaps.services.accountService.message.MsgAccAddScore;
-import com.wordpress.ilyaps.services.accountService.message.MsgAccGetScore;
 import com.wordpress.ilyaps.services.socketsService.message.MsgSckSendData;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;

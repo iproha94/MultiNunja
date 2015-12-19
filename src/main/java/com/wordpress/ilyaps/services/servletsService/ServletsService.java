@@ -25,12 +25,4 @@ public interface ServletsService extends Abonent, Runnable {
 
     UserProfile getUser(String sessionId);
 
-    void gettingScore(String sessionId, String result);
-
-    void gettingScoreUser(String sessionId, int start, int amount);
-
-    ScoreState checkScoreState(String sessionId);
-
-    String getScore(String sessionId);
-
 }

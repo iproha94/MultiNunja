@@ -39,7 +39,7 @@ public class Main {
     private static final String PROPERTIES_FILE = "cfg/server.properties";
 
     public static void main(@NotNull String[] args) {
-        LOGGER.info("старт сервера");
+        LOGGER.info("start of activation of server");
 
         final GameContext gameСontext = GameContext.getInstance();
 
@@ -77,14 +77,13 @@ public class Main {
         gamemechServiceThread.setName("Gamemech Service");
         gameСontext.add(GamemechService.class, gamemechService);
 
-        final Server server = new Server(new Integer(conf.getValueOfProperty("port")));
 
         Servlet mainPage = new MainpageServlet();
         Servlet signUp = new RegisterServlet(servletsService);
         Servlet signIn = new AuthorizationServlet(servletsService);
         Servlet logout = new LeavingServlet(servletsService);
-        Servlet admin = new AdminpageServlet(servletsService, server);
-        Servlet scores = new ScoresServlet(servletsService);
+        Servlet admin = new AdminpageServlet(accountService);
+        Servlet scores = new ScoresServlet(accountService);
         WebSocketServlet game = new GameServlet();
 
         final ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -102,6 +101,7 @@ public class Main {
         resourceHandler.setDirectoriesListed(true);
         resourceHandler.setResourceBase("static");
 
+        final Server server = new Server(new Integer(conf.getValueOfProperty("port")));
         final HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[]{resourceHandler, context});
         server.setHandler(handlers);
@@ -117,7 +117,5 @@ public class Main {
             LOGGER.error("Server isn't started");
             LOGGER.error(e);
         }
-
-       LOGGER.info("выходим из мейна");
     }
 }
