@@ -16,7 +16,7 @@ public class Fruit {
     public void generateFruit(int id) {
         this.id = id;
         a = rand.nextInt(200) - 100;
-        b = rand.nextInt(100) - 100;
+        b = rand.nextInt(200) - 100;
         c = rand.nextInt(100);
 
         if (a > 0) {
