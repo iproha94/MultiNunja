@@ -5,7 +5,7 @@ package com.wordpress.ilyaps.services.servletsService;
  */
 public enum UserState {
     PENDING_LEAVING,
-    LEFT,
+    SUCCESSFUL_LEFT,
     UNSUCCESSFUL_LEFT,
     PENDING_AUTHORIZATION,
     SUCCESSFUL_AUTHORIZED,

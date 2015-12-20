@@ -20,8 +20,6 @@ public class ScoresServlet extends HttpServlet {
     private static final int DEFAULT_START = 0;
 
     @NotNull
-    static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
-    @NotNull
     private AccountService accService;
 
     public ScoresServlet(@NotNull AccountService accService) {
@@ -34,7 +32,7 @@ public class ScoresServlet extends HttpServlet {
         response.setCharacterEncoding("utf-8");
         response.setContentType("text/html;charset=utf-8");
 
-        String listScore = accService.getAccountServiceDAO().getScore(DEFAULT_START, DEFAULT_AMOUNT);
+        String listScore = accService.getScore(DEFAULT_START, DEFAULT_AMOUNT);
         try (PrintWriter pw = response.getWriter()) {
             pw.println(listScore);
         }

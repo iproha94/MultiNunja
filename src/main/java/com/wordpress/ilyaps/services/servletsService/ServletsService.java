@@ -2,28 +2,32 @@ package com.wordpress.ilyaps.services.servletsService;
 
 import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.messageSystem.Abonent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author e.shubin
  */
 public interface ServletsService extends Abonent, Runnable {
+    void registered(@NotNull String name, @Nullable UserProfile result);
 
+    void registerUser(@NotNull String name, @NotNull String email, @NotNull String password);
 
-    void registered(String name, UserProfile result);
+    void authorized(@NotNull String email, @NotNull String sessionId, @Nullable UserProfile result);
 
-    void registerUser(String name, String email, String password);
+    void authorizationUser(@NotNull String email, @NotNull String password, @NotNull String sessionId);
 
-    void authorized(String email, String sessionId, UserProfile result);
+    void left(@NotNull String email, @NotNull String sessionId, @Nullable UserProfile result);
 
-    void authorizationUser(String email, String password, String sessionId);
+    void leaveUser(@NotNull String email, @NotNull String sessionId);
 
-    void left(String email, String sessionId, UserProfile result);
+    @Nullable UserState getUserState(@NotNull String email);
 
-    void leaveUser(String email, String sessionId);
+    @Nullable UserProfile getUserProfile(@NotNull String sessionId);
 
-    UserState checkUserState(String email);
+    void removeUserProfile(@NotNull String sessionId);
 
-    UserProfile getUser(String sessionId);
+    void removeUserState(@NotNull String email);
 
-    void removeAbout(String sessionId, String email);
+    void clearAll();
 }

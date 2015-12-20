@@ -3,36 +3,33 @@ package com.wordpress.ilyaps.frontendServlets;
 import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.services.servletsService.UserState;
-import com.wordpress.ilyaps.utils.PageGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import static com.wordpress.ilyaps.frontendServlets.ServletsHelper.printInResponse;
 
 /**
  * @author v.chibrikov
  */
 public class AuthorizationServlet extends HttpServlet {
-    private static final int STATUSTEAPOT = 418;
-    private static final String INCOGNITTO = "Incognitto";
-
-
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
     @NotNull
-    private ServletsService feService;
+    private ServletsService srvService;
 
-    public AuthorizationServlet(@NotNull ServletsService feService) {
-        this.feService = feService;
+    public AuthorizationServlet(@NotNull ServletsService srvService) {
+        this.srvService = srvService;
     }
 
     @Override
@@ -45,15 +42,16 @@ public class AuthorizationServlet extends HttpServlet {
 
         Map<String, Object> pageVariables = new HashMap<>();
 
-        String nameInSession = (String) request.getSession().getAttribute("name");
+        String name = ServletsHelper.getNameInSession(request);
+        String sessionId = request.getSession().getId();
 
-        try (PrintWriter pw = response.getWriter()) {
-            if (checkNameInSession(pageVariables, nameInSession)) {
-                //feService.
-                pw.println(PageGenerator.getPage("auth/signin.html", pageVariables));
-            } else {
-                pw.println(PageGenerator.getPage("authresponse.txt", pageVariables));
-            }
+        if (ServletsHelper.nameEqualsIncognitto(name)) {
+            srvService.removeUserProfile(sessionId);
+            ServletsHelper.signinInResponse(response);
+        } else {
+            pageVariables.put("status", ServletsHelper.STATUSTEAPOT);
+            pageVariables.put("info", "You already autherizate");
+            ServletsHelper.printInResponse(pageVariables, response);
         }
     }
 
@@ -65,89 +63,91 @@ public class AuthorizationServlet extends HttpServlet {
         response.setCharacterEncoding("utf-8");
         response.setContentType("text/html;charset=utf-8");
 
+        Map<String, Object> pageVariables = new HashMap<>();
+
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String nameInSession = (String) request.getSession().getAttribute("name");
+
+
+        String info = checkParameters(email, password);
+        if (info != null) {
+            pageVariables.put("status", HttpServletResponse.SC_BAD_REQUEST);
+            pageVariables.put("info", info);
+
+            printInResponse(pageVariables, response);
+            return;
+        }
+
+        UserState state = srvService.getUserState(email);
+
+        if (state == UserState.PENDING_AUTHORIZATION) {
+            LOGGER.info("user pands authorization");
+            pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
+            pageVariables.put("info", "your authorization not ready.");
+
+            printInResponse(pageVariables, response);
+            return;
+        }
+
         String sessionId = request.getSession().getId();
+        UserProfile profile = srvService.getUserProfile(sessionId);
 
-        Map<String, Object> pageVariables = new HashMap<>();
-        UserState state = feService.checkUserState(email);
-        UserProfile profile = feService.getUser(sessionId);
+        if (state == UserState.SUCCESSFUL_AUTHORIZED) {
+            if (profile == null) {
 
-        if (state == UserState.SUCCESSFUL_AUTHORIZED && profile != null) {
+                srvService.authorizationUser(email, password, sessionId);
+                pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
+                pageVariables.put("info", "your authorization not ready.");
+                printInResponse(pageVariables, response);
+                return;
+            }
 
             request.getSession().setAttribute("name", profile.getName());
-
-            LOGGER.info("successful authorization");
             pageVariables.put("status", HttpServletResponse.SC_OK);
             pageVariables.put("info", profile.getName());
 
-        } else if (checkNameInSession(pageVariables, nameInSession) &&
-                checkState(pageVariables, state) &&
-                checkParameters(pageVariables, email, password) )
-        {
-            LOGGER.info("start autharization");
-            feService.authorizationUser(email, password, sessionId);
+            printInResponse(pageVariables, response);
 
-            pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
-            pageVariables.put("info", "wait completed autharization");
-        } else {
-            feService.removeAbout(sessionId, email);
-            pageVariables.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            pageVariables.put("info", "user with this email and password not found");
+            LOGGER.info("successful authorization " + email);
+            return;
         }
 
-        try (PrintWriter pw = response.getWriter()) {
-            pw.println(PageGenerator.getPage("authresponse.txt", pageVariables));
-        }
-    }
-
-    boolean checkNameInSession(Map<String, Object> pageVariables, String name) {
-        if (name != null && !INCOGNITTO.equals(name)) {
-            LOGGER.info("the user has already been authenticated");
-            pageVariables.put("status", STATUSTEAPOT);
-            pageVariables.put("info", "you has already been authenticated");
-            return false;
-        }
-
-        return true;
-    }
-
-    boolean checkState(Map<String, Object> pageVariables, UserState state) {
         if (state == UserState.UNSUCCESSFUL_AUTHORIZED) {
             LOGGER.info("user with this email and password not found");
             pageVariables.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             pageVariables.put("info", "user with this email and password not found");
-            return false;
-        } else if (state == UserState.PENDING_AUTHORIZATION) {
-            LOGGER.info("user pands authorization");
-            pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
-            pageVariables.put("info", "your authorization not ready.");
-            return false;
+
+            srvService.removeUserState(email);
+            srvService.removeUserProfile(sessionId);
+
+            printInResponse(pageVariables, response);
+            return;
         }
 
-        return true;
+        srvService.authorizationUser(email, password, sessionId);
+        pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
+        pageVariables.put("info", "your authorization not ready.");
+        printInResponse(pageVariables, response);
     }
 
-    boolean checkParameters(Map<String, Object> pageVariables, String email, String password) {
+    @Nullable
+    String checkParameters(String email, String password) {
         if (password == null || email == null) {
             LOGGER.info("email or password is null");
-            pageVariables.put("status", HttpServletResponse.SC_BAD_REQUEST);
-            pageVariables.put("info", "email or password is null");
-            return false;
-        } else if (email.length() < 4 || password.length() < 4) {
-            LOGGER.info("email or password is short");
-            pageVariables.put("status", HttpServletResponse.SC_BAD_REQUEST);
-            pageVariables.put("info", "email or password is short");
-            return false;
-        } else if (Pattern.matches(".*[А-Яа-я]+.*", email)) {
-            LOGGER.info("not supported Cyrillic");
-            pageVariables.put("status", HttpServletResponse.SC_BAD_REQUEST);
-            pageVariables.put("info", "not supported Cyrillic");
-            return false;
+            return "email or password is null";
         }
 
-        return true;
+        if (email.length() < 4 || password.length() < 4) {
+            LOGGER.info("email or password is short");
+            return "email or password is short";
+        }
+
+        if (Pattern.matches(ServletsHelper.CYRILLIC_PATTERN, email)) {
+            LOGGER.info("not supported Cyrillic");
+            return "not supported Cyrillic";
+        }
+
+        return null;
     }
 
 }

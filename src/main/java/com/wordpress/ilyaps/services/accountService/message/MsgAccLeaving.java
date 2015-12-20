@@ -29,7 +29,7 @@ public class MsgAccLeaving extends MsgToAccountService {
 
     @Override
     protected void exec(AccountService service) {
-        final UserProfile profile = service.getAccountServiceDAO().leaving(sessionId);
+        final UserProfile profile = service.leaving(sessionId);
         final Message msg = new MsgSrvLeft(getTo(), getFrom(), email, sessionId, profile);
         service.sendMessage(msg);
     }

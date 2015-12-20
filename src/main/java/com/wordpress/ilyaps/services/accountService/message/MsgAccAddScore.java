@@ -26,6 +26,6 @@ public class MsgAccAddScore extends MsgToAccountService {
 
     @Override
     protected void exec(AccountService service) {
-        service.getAccountServiceDAO().addScore(name, score);
+        service.addScore(name, score);
     }
 }

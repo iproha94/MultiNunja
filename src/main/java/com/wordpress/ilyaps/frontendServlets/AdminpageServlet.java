@@ -1,12 +1,12 @@
 package com.wordpress.ilyaps.frontendServlets;
 
+import com.wordpress.ilyaps.serverHelpers.GameContext;
 import com.wordpress.ilyaps.services.accountService.AccountService;
 import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.utils.PageGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,15 +24,20 @@ public class AdminpageServlet extends HttpServlet {
 
     @NotNull
     private AccountService accService;
+    @NotNull
+    private ServletsService srvService;
 
-    public AdminpageServlet(@NotNull AccountService accService) {
-        this.accService = accService;
+    public AdminpageServlet() {
+        GameContext gameContext = GameContext.getInstance();
+
+        this.accService = (AccountService) gameContext.get(AccountService.class);
+        this.srvService = (ServletsService) gameContext.get(ServletsService.class);
     }
 
     @Override
     public void doGet(@NotNull HttpServletRequest request,
                       @NotNull HttpServletResponse response) throws ServletException, IOException {
-        String nameInSession = (String) request.getSession().getAttribute("name");
+        String nameInSession = ServletsHelper.getNameInSession(request);
 
         LOGGER.info(nameInSession + " went to the admin panel");
 
@@ -42,8 +47,8 @@ public class AdminpageServlet extends HttpServlet {
         Map<String, Object> pageVariables = new HashMap<>();
 
         pageVariables.put("status", "run");
-        pageVariables.put("countUser", accService.getAccountServiceDAO().countRegisteredUser());
-        pageVariables.put("countSession", accService.getAccountServiceDAO().countAuthorizedUser());
+        pageVariables.put("countUser", accService.countRegisteredUser());
+        pageVariables.put("countSession", accService.countAuthorizedUser());
 
         try (PrintWriter pw = response.getWriter()) {
             pw.println(PageGenerator.getPage("admin/admin.html", pageVariables));
@@ -61,18 +66,18 @@ public class AdminpageServlet extends HttpServlet {
         LOGGER.info(nameInSession + " trying to shut down the server");
         Map<String, Object> pageVariables = new HashMap<>();
 
-        if (!PASSWORD.equals(password)) {
-            LOGGER.info("not right password for shutdown server");
+        if (PASSWORD.equals(password)) {
+            LOGGER.info("Shutdown server successful");
+            System.exit(0);
+        } else {
+            LOGGER.info("not right password");
 
             pageVariables.put("status", HttpServletResponse.SC_BAD_REQUEST);
             pageVariables.put("info", "not right password");
+        }
 
-            try (PrintWriter pw = resp.getWriter()) {
-                pw.println(PageGenerator.getPage("authresponse.txt", pageVariables));
-            }
-        } else {
-            LOGGER.info("Shutdown server successful");
-            System.exit(0);
+        try (PrintWriter pw = resp.getWriter()) {
+            pw.println(PageGenerator.getPage("authresponse.txt", pageVariables));
         }
     }
 }

@@ -33,7 +33,7 @@ public class MsgAccRegister extends MsgToAccountService {
 
     @Override
     protected void exec(AccountService service) {
-        UserProfile result = service.getAccountServiceDAO().register(name, email, password);
+        UserProfile result = service.register(name, email, password);
         final Message backMsg = new MsgSrvRegistered(
                 this.getTo(),
                 this.getFrom(),

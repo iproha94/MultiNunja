@@ -5,25 +5,23 @@ import com.wordpress.ilyaps.services.servletsService.UserState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import com.wordpress.ilyaps.utils.PageGenerator;
+import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import static com.wordpress.ilyaps.frontendServlets.ServletsHelper.printInResponse;
 
 /**
  * Created by v.chibrikov on 13.09.2014.
  */
 public class RegisterServlet extends HttpServlet {
-    private static final int STATUSTEAPOT = 418;
-    private static final String INCOGNITTO = "Incognitto";
-
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
     @NotNull
@@ -43,15 +41,18 @@ public class RegisterServlet extends HttpServlet {
 
         Map<String, Object> pageVariables = new HashMap<>();
 
-        String nameInSession = (String) request.getSession().getAttribute("name");
+        String sessionId = request.getSession().getId();
+        String nameInSession = ServletsHelper.getNameInSession(request);
 
-        try (PrintWriter pw = response.getWriter()) {
-            if (checkNameInSession(pageVariables, nameInSession)) {
-                pw.println(PageGenerator.getPage("auth/signup.html", pageVariables));
-            } else {
-                pw.println(PageGenerator.getPage("authresponse.txt", pageVariables));
-            }
+        if (ServletsHelper.nameEqualsIncognitto(nameInSession)) {
+            srvService.removeUserProfile(sessionId);
+            ServletsHelper.signupInResponse(response);
+            return;
         }
+
+        pageVariables.put("status", ServletsHelper.STATUSTEAPOT);
+        pageVariables.put("info", "You already autherizate");
+        ServletsHelper.printInResponse(pageVariables, response);
     }
 
     @Override
@@ -62,81 +63,86 @@ public class RegisterServlet extends HttpServlet {
         response.setCharacterEncoding("utf-8");
         response.setContentType("text/html;charset=utf-8");
 
+        Map<String, Object> pageVariables = new HashMap<>();
 
         String name = request.getParameter("name");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String nameInSession = (String) request.getSession().getAttribute("name");
 
-        Map<String, Object> pageVariables = new HashMap<>();
-        UserState state = srvService.checkUserState(email);
+        String sessionId = request.getSession().getId();
 
+        String info = checkParameters(name, email, password);
+        if (info != null) {
+            pageVariables.put("status", HttpServletResponse.SC_BAD_REQUEST);
+            pageVariables.put("info", info);
+
+            printInResponse(pageVariables, response);
+            return;
+        }
+
+        UserState state = srvService.getUserState(email);
+
+        if (state == UserState.PENDING_REGISTRATION) {
+            LOGGER.info("user pands registration");
+            pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
+            pageVariables.put("info", "your registration not ready.");
+
+            printInResponse(pageVariables, response);
+            return;
+        }
 
         if (state == UserState.SUCCESSFUL_REGISTERED) {
-            LOGGER.info("successful registration");
+            LOGGER.info("successful registration " + email);
             pageVariables.put("status", HttpServletResponse.SC_OK);
             pageVariables.put("info", email);
-        } else if (checkNameInSession(pageVariables, nameInSession) &&
-                checkState(pageVariables, state) &&
-                checkParameters(pageVariables, name, email, password) )
-        {
-            LOGGER.info("start registration");
-            srvService.registerUser(name, email, password);
+            srvService.removeUserState(email);
+            srvService.removeUserProfile(sessionId);
 
-            pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
-            pageVariables.put("info", "wait completed registration");
+            printInResponse(pageVariables, response);
+            return;
         }
 
-        try (PrintWriter pw = response.getWriter()) {
-            pw.println(PageGenerator.getPage("authresponse.txt", pageVariables));
-        }
-    }
-
-    boolean checkNameInSession(Map<String, Object> pageVariables, String name) {
-        if (name != null && !INCOGNITTO.equals(name)) {
-            LOGGER.info("the user has already been authenticated");
-            pageVariables.put("status", STATUSTEAPOT);
-            pageVariables.put("info", "you has already been authenticated");
-            return false;
-        }
-
-        return true;
-    }
-
-    boolean checkState(Map<String, Object> pageVariables, UserState state) {
         if (state == UserState.UNSUCCESSFUL_REGISTERED) {
             LOGGER.info("user with this name or email already exists");
             pageVariables.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             pageVariables.put("info", "user with this name or email already exists");
-            return false;
-        } else if (state == UserState.PENDING_REGISTRATION) {
-            LOGGER.info("user pands registration");
-            pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
-            pageVariables.put("info", "your registration not ready.");
-            return false;
+            srvService.removeUserState(email);
+            srvService.removeUserProfile(sessionId);
+
+            printInResponse(pageVariables, response);
+            return;
         }
 
-        return true;
+        srvService.registerUser(name, email, password);
+        pageVariables.put("status", HttpServletResponse.SC_NOT_MODIFIED);
+        pageVariables.put("info", "your registration not ready.");
+        printInResponse(pageVariables, response);
     }
 
-    boolean checkParameters(Map<String, Object> pageVariables, String name, String email, String password) {
+
+
+    @Nullable
+    String checkParameters(String name, String email, String password)
+    {
         if (name == null || password == null || email == null) {
             LOGGER.info("name or email or password is null");
-            pageVariables.put("status", HttpServletResponse.SC_BAD_REQUEST);
-            pageVariables.put("info", "name or email or password is null");
-            return false;
-        } else if (name.length() < 4 || email.length() < 4 || password.length() < 4) {
-            LOGGER.info("name or email or password is short");
-            pageVariables.put("status", HttpServletResponse.SC_BAD_REQUEST);
-            pageVariables.put("info", "name or email or password is short");
-            return false;
-        } else if (Pattern.matches(".*[А-Яа-я]+.*", name) || Pattern.matches(".*[А-Яа-я]+.*", email)) {
-            LOGGER.info("not supported Cyrillic");
-            pageVariables.put("status", HttpServletResponse.SC_BAD_REQUEST);
-            pageVariables.put("info", "not supported Cyrillic");
-            return false;
+            return "name or email or password is null";
         }
 
-        return true;
+        if (name.length() < 4 || email.length() < 4 || password.length() < 4) {
+            LOGGER.info("name or email or password is short");
+            return "name or email or password is short";
+        }
+
+        if (Pattern.matches(ServletsHelper.CYRILLIC_PATTERN, name) ||
+                Pattern.matches(ServletsHelper.CYRILLIC_PATTERN, email))
+        {
+            LOGGER.info("not supported Cyrillic");
+            return "not supported Cyrillic";
+        }
+
+        return null;
     }
+
+
 }

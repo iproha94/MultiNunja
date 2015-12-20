@@ -33,7 +33,6 @@ public class ServletsServiceImpl implements ServletsService {
     @NotNull
     private final Map<String, UserState> emailToState = new HashMap<>();
 
-
     public ServletsServiceImpl() {
         GameContext gameContext = GameContext.getInstance();
 
@@ -43,8 +42,8 @@ public class ServletsServiceImpl implements ServletsService {
     }
 
     @Override
-    public void registerUser(String name, String email, String password) {
-        UserState state = checkUserState(email);
+    public void registerUser(@NotNull String name, @NotNull String email, @NotNull String password) {
+        UserState state = getUserState(email);
         if (state == UserState.SUCCESSFUL_REGISTERED ||
                 state == UserState.SUCCESSFUL_AUTHORIZED) {
             LOGGER.warn("user " + email + " with status = " + state + " wants to register");
@@ -52,7 +51,7 @@ public class ServletsServiceImpl implements ServletsService {
         }
 
         final Message msg = new MsgAccRegister(
-                this.getAddress(),
+                address,
                 messageSystem.getAddressService().getAccountServiceAddress(),
                 name,
                 email,
@@ -63,7 +62,7 @@ public class ServletsServiceImpl implements ServletsService {
     }
 
     @Override
-    public void registered(String email, UserProfile result) {
+    public void registered(@NotNull String email, UserProfile result) {
         if (result == null) {
             emailToState.put(email, UserState.UNSUCCESSFUL_REGISTERED);
         } else {
@@ -72,9 +71,9 @@ public class ServletsServiceImpl implements ServletsService {
     }
 
     @Override
-    public void authorizationUser(String email, String password, String sessionId) {
+    public void authorizationUser(@NotNull String email, @NotNull String password, @NotNull String sessionId) {
         Message msg = new MsgAccAuthorization(
-                getAddress(),
+                address,
                 messageSystem.getAddressService().getAccountServiceAddress(),
                 sessionId,
                 email,
@@ -85,7 +84,7 @@ public class ServletsServiceImpl implements ServletsService {
     }
 
     @Override
-    public void authorized(String email, String sessionId, UserProfile result) {
+    public void authorized(@NotNull String email, @NotNull String sessionId, UserProfile result) {
         if (result == null) {
             emailToState.put(email, UserState.UNSUCCESSFUL_AUTHORIZED);
         } else {
@@ -95,9 +94,9 @@ public class ServletsServiceImpl implements ServletsService {
     }
 
     @Override
-    public void leaveUser(String email, String sessionId) {
+    public void leaveUser(@NotNull String email, @NotNull String sessionId) {
         Message msg = new MsgAccLeaving(
-                getAddress(),
+                address,
                 messageSystem.getAddressService().getAccountServiceAddress(),
                 sessionId,
                 email
@@ -108,31 +107,41 @@ public class ServletsServiceImpl implements ServletsService {
     }
 
     @Override
-    public void left(String email, String sessionId, UserProfile result) {
+    public void left(@NotNull String email, @NotNull String sessionId, UserProfile result) {
         if (result == null) {
             emailToState.put(email, UserState.UNSUCCESSFUL_LEFT);
         } else {
-            emailToState.put(email, UserState.LEFT);
+            emailToState.put(email, UserState.SUCCESSFUL_LEFT);
         }
     }
     @Override
     @NotNull
-    public UserState checkUserState(String email) {
+    public UserState getUserState(@NotNull String email) {
         if (emailToState.get(email) == null) {
-            emailToState.put(email, UserState.LEFT);
+            emailToState.put(email, UserState.SUCCESSFUL_LEFT);
         }
         return emailToState.get(email);
     }
     @Override
     @Nullable
-    public UserProfile getUser(String sessionId) {
+    public UserProfile getUserProfile(@NotNull String sessionId) {
         return sessionToProfile.get(sessionId);
     }
 
     @Override
-    public void removeAbout(String sessionId, String email) {
+    public void removeUserProfile(@NotNull String sessionId) {
         sessionToProfile.remove(sessionId);
-        emailToState.remove(email);
+    }
+
+    @Override
+    public void removeUserState(@NotNull String email) {
+        emailToState.put(email, UserState.SUCCESSFUL_LEFT);
+    }
+
+    @Override
+    public void clearAll() {
+        emailToState.clear();
+        sessionToProfile.clear();
     }
 
     @NotNull

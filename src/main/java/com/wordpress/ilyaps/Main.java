@@ -62,8 +62,7 @@ public class Main {
         servletsServiceThread.setName("servletsService");
         gameСontext.add(ServletsService.class, servletsService);
 
-        final AccountServiceDAO accountServiceDAO = new AccountServiceDAODB(PROPERTIES_FILE_DB);
-        final AccountService accountService = new AccountServiceImpl(accountServiceDAO);
+        final AccountService accountService = new AccountServiceDB(PROPERTIES_FILE_DB);
         final Thread accountServiceThread = new Thread(accountService);
         accountServiceThread.setDaemon(true);
         accountServiceThread.setName("Account Service");
@@ -80,8 +79,9 @@ public class Main {
         Servlet signUp = new RegisterServlet(servletsService);
         Servlet signIn = new AuthorizationServlet(servletsService);
         Servlet logout = new LeavingServlet(servletsService);
-        Servlet admin = new AdminpageServlet(accountService);
+        Servlet admin = new AdminpageServlet();
         Servlet scores = new ScoresServlet(accountService);
+        Servlet checkAuthorization = new CheckauthServlet(accountService);
         WebSocketServlet game = new GameServlet();
 
         final ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -93,6 +93,7 @@ public class Main {
         context.addServlet(new ServletHolder(game), conf.getValueOfProperty("gameSocketUrl"));
         context.addServlet(new ServletHolder(admin), conf.getValueOfProperty("adminPageUrl"));
         context.addServlet(new ServletHolder(scores), conf.getValueOfProperty("scoresPageUrl"));
+        context.addServlet(new ServletHolder(checkAuthorization), conf.getValueOfProperty("checkauthPageUrl"));
 
 
         final ResourceHandler resourceHandler = new ResourceHandler();

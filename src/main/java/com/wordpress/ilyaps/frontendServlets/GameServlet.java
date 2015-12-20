@@ -40,9 +40,9 @@ public class GameServlet extends WebSocketServlet {
         response.setCharacterEncoding("utf-8");
         response.setContentType("text/html;charset=utf-8");
 
-        String name = (String) request.getSession().getAttribute("name");
-        if (name == null || "Incognitto".equals(name)) {
-            LOGGER.info("name == (null || Incognitto)");
+        String name = ServletsHelper.getNameInSession(request);
+        if (ServletsHelper.nameEqualsIncognitto(name)) {
+            LOGGER.info("name == Incognitto");
             return;
         }
 
