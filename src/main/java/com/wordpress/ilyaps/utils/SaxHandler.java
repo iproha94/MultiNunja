@@ -12,7 +12,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * Created by ilya on 01.11.15.
  */
 public class SaxHandler extends DefaultHandler {
-    @SuppressWarnings("ConstantConditions")
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(SaxHandler.class);
 

@@ -41,16 +41,13 @@ public class VirtualFS {
             return !files.isEmpty();
         }
 
-        @SuppressWarnings("IteratorNextCanNotThrowNoSuchElementException")
         @Override
         public String next() {
             File file = files.peek();
             if (file != null && file.isDirectory()) {
-                //noinspection ConstantConditions
                 Collections.addAll(files, file.listFiles());
             }
 
-            //noinspection ConstantConditions
             return files.poll().getAbsolutePath();
         }
 
@@ -58,10 +55,8 @@ public class VirtualFS {
         public void remove() {
 
         }
-
     }
 
-    @SuppressWarnings("unused")
     public String getAbsolutePath(String file) {
         return new File(root + file).getAbsolutePath();
     }

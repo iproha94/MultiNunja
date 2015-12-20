@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,11 +18,8 @@ import static com.wordpress.ilyaps.frontendServlets.ServletsHelper.printInRespon
  * Created by ilya on 26.09.15.
  */
 public class CheckauthServlet extends HttpServlet {
-    private static final int DEFAULT_AMOUNT = 10;
-    private static final int DEFAULT_START = 0;
-
     @NotNull
-    private AccountService accService;
+    private final AccountService accService;
 
     public CheckauthServlet(@NotNull AccountService accService) {
         this.accService = accService;
@@ -42,7 +38,7 @@ public class CheckauthServlet extends HttpServlet {
 
         if (profile == null) {
             pageVariables.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-            pageVariables.put("info", "you not aUTHORIZED");
+            pageVariables.put("info", "you not authorized");
         } else {
             pageVariables.put("status", HttpServletResponse.SC_OK);
             pageVariables.put("info", profile.getName());

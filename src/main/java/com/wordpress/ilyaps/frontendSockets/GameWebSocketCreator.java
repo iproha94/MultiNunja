@@ -15,13 +15,12 @@ import org.jetbrains.annotations.NotNull;
  * Created by ilya on 27.10.15.
  */
 public class GameWebSocketCreator implements WebSocketCreator {
-    @SuppressWarnings("ConstantConditions")
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(GameWebSocketCreator.class);
     @NotNull
-    private SocketsService sckService;
+    private final SocketsService sckService;
     @NotNull
-    private ServletsService srvService;
+    private final ServletsService srvService;
 
     public GameWebSocketCreator() {
         GameContext gameContext = GameContext.getInstance();
@@ -36,6 +35,10 @@ public class GameWebSocketCreator implements WebSocketCreator {
 
         UserProfile profile = srvService.getUserProfile(sessionId);
 
+        if (profile == null) {
+            LOGGER.error("profile == null");
+            throw new NullPointerException();
+        }
         return new GameWebSocket(sckService, profile.getName());
     }
 }

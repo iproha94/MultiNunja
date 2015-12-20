@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MsgAccLeaving extends MsgToAccountService {
     @NotNull
-    private String sessionId;
+    private final String sessionId;
     @NotNull
-    private String email;
+    private final String email;
 
     public MsgAccLeaving(
             @NotNull Address from,
@@ -28,7 +28,7 @@ public class MsgAccLeaving extends MsgToAccountService {
     }
 
     @Override
-    protected void exec(AccountService service) {
+    protected void exec(@NotNull AccountService service) {
         final UserProfile profile = service.leaving(sessionId);
         final Message msg = new MsgSrvLeft(getTo(), getFrom(), email, sessionId, profile);
         service.sendMessage(msg);

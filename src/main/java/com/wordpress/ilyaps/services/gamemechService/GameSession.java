@@ -36,26 +36,7 @@ public class GameSession {
         return users.values();
     }
 
-    @NotNull
-    public String getNameWinner() {
-        String nameWinner = "";
-        int maxScore = 0;
-        for (GameUser gameUser : users.values()) {
-            if (gameUser.getScore() >= maxScore) {
-                maxScore = gameUser.getScore();
-                nameWinner = gameUser.getName();
-            }
-        }
-        return nameWinner;
-    }
-
-    public boolean removeGameUser(String userName) {
-        GameUser gameUser = users.get(userName);
-
-        if (gameUser == null) {
-            return false;
-        }
+    public void removeGameUser(String userName) {
         users.remove(userName);
-        return true;
     }
 }

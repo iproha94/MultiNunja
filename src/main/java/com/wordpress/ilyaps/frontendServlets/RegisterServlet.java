@@ -25,7 +25,7 @@ public class RegisterServlet extends HttpServlet {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
     @NotNull
-    private ServletsService srvService;
+    private final ServletsService srvService;
 
     public RegisterServlet(@NotNull ServletsService srvService) {
         this.srvService = srvService;

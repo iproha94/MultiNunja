@@ -2,7 +2,7 @@ package com.wordpress.ilyaps.services.accountService;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.wordpress.ilyaps.ThreadSettings;
+import com.wordpress.ilyaps.services.ThreadSettings;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
 import com.wordpress.ilyaps.messageSystem.MessageSystem;
@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,7 +127,7 @@ public class AccountServiceMemory implements AccountService {
     @Override
     public String getScore(int start, int amount) {
         JsonObject result = new JsonObject();
-        result.addProperty("status", 200);
+        result.addProperty("status", HttpServletResponse.SC_OK);
 
         int i = 0;
         JsonArray arr = new JsonArray();
@@ -140,6 +141,24 @@ public class AccountServiceMemory implements AccountService {
                 break;
             }
         }
+        result.add("players", arr);
+
+        return result.toString();
+    }
+
+    @NotNull
+    @Override
+    public String getScore(@NotNull String name) {
+        JsonObject result = new JsonObject();
+        result.addProperty("status", HttpServletResponse.SC_OK);
+
+        JsonArray arr = new JsonArray();
+        listScores.stream().filter(score -> name.equals(score.getName())).forEach(score -> {
+            JsonObject guser = new JsonObject();
+            guser.addProperty("name", score.getName());
+            guser.addProperty("score", score.getScore());
+            arr.add(guser);
+        });
         result.add("players", arr);
 
         return result.toString();

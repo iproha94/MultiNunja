@@ -1,5 +1,6 @@
 package com.wordpress.ilyaps.services.gamemechService;
 
+import com.wordpress.ilyaps.services.ThreadSettings;
 import com.wordpress.ilyaps.services.accountService.message.MsgAccAddScore;
 import com.wordpress.ilyaps.services.socketsService.message.MsgSckSendData;
 import com.wordpress.ilyaps.messageSystem.Address;
@@ -12,6 +13,9 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by ilya on 13.12.15.
@@ -24,13 +28,15 @@ public abstract class GamemechServiceImpl implements GamemechService {
     @NotNull
     private final MessageSystem messageSystem;
     @NotNull
-    private GMResource gMResource;
+    private final GamemechResource gamemechResource;
     @NotNull
     private final Map<String, GameSession> nameToGame = new HashMap<>();
     @NotNull
     private final Set<GameSession> allSessions = new HashSet<>();
     @NotNull
     private final Set<String> namesPlayers = new HashSet<>();
+    final int stepTime;
+    final int gameTime;
 
     public GamemechServiceImpl() {
         GameContext gameContext = GameContext.getInstance();
@@ -40,7 +46,13 @@ public abstract class GamemechServiceImpl implements GamemechService {
         messageSystem.getAddressService().registerGamemechService(this);
 
         ResourcesContext resourcesContext = (ResourcesContext) gameContext.get(ResourcesContext.class);
-        this.gMResource = (GMResource) resourcesContext.get(GMResource.class);
+        this.gamemechResource = (GamemechResource) resourcesContext.get(GamemechResource.class);
+
+        stepTime = gamemechResource.getStepTime();
+        gameTime = gamemechResource.getGameTime();
+
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(this::gmStep, 0, stepTime, TimeUnit.MILLISECONDS);
     }
 
 
@@ -56,6 +68,7 @@ public abstract class GamemechServiceImpl implements GamemechService {
         return allSessions;
     }
 
+    @NotNull
     @Override
     public Address getAddress() {
         return address;
@@ -68,24 +81,20 @@ public abstract class GamemechServiceImpl implements GamemechService {
 
     @Override
     public void run() {
-        LOGGER.info("старт потока");
-
-        int stepTime = gMResource.getStepTime();
-        int gameTime = gMResource.getGameTime();
+        LOGGER.info("start thread");
 
         while (true) {
             messageSystem.execForAbonent(this);
-            gmStep(gameTime);
             try {
-                Thread.sleep(stepTime);
+                Thread.sleep(ThreadSettings.SLEEP_TIME);
             } catch (InterruptedException e) {
-                LOGGER.error("засыпания потока");
+                LOGGER.error("sleep thread");
                 LOGGER.error(e);
             }
         }
     }
 
-    private void gmStep(int gameTime) {
+    private void gmStep() {
         for (Iterator<GameSession> iterator = allSessions.iterator(); iterator.hasNext(); ) {
             GameSession session = iterator.next();
             if (session == null) {
@@ -98,9 +107,9 @@ public abstract class GamemechServiceImpl implements GamemechService {
     }
 
     @Override
-    public void sendData(String name, String data) {
+    public void sendData(@NotNull String name, @NotNull String data) {
         Message msg = new MsgSckSendData(
-                getAddress(),
+                address,
                 messageSystem.getAddressService().getSocketsServiceAddress(),
                 name,
                 data
@@ -111,24 +120,24 @@ public abstract class GamemechServiceImpl implements GamemechService {
     @Override
     public void addUser(@NotNull String name) {
         namesPlayers.add(name);
-        LOGGER.info(name + " вошел в игру");
+        LOGGER.info(name + " go in game");
 
-        if (namesPlayers.size() == gMResource.getNumberPlayers()) {
+        if (namesPlayers.size() == gamemechResource.getNumberPlayers()) {
             startGame();
             namesPlayers.clear();
         }
     }
 
     @Override
-    public boolean removeUser(@NotNull String name) {
-        LOGGER.info("пытается уйти пользователь " + name);
+    public void removeUser(@NotNull String name) {
+        LOGGER.info("go out game" + name);
         if (namesPlayers.remove(name)) {
-            return true;
+            return;
         }
 
         GameSession gameSession = nameToGame.get(name);
         if (gameSession == null) {
-            return false;
+            return;
         }
 
         gameSession.removeGameUser(name);
@@ -136,7 +145,7 @@ public abstract class GamemechServiceImpl implements GamemechService {
 
         if (gameSession.getGameUsers().isEmpty()) {
             allSessions.remove(gameSession);
-            return true;
+            return;
         }
 
         String message = GameMessageCreator.createMessageLeave(name);
@@ -144,8 +153,6 @@ public abstract class GamemechServiceImpl implements GamemechService {
         for (GameUser user : gameSession.getGameUsers()) {
             sendData(user.getName(), message);
         }
-
-        return true;
     }
 
     private void startGame() {
@@ -157,7 +164,7 @@ public abstract class GamemechServiceImpl implements GamemechService {
             nameToGame.put(userName, gameSession);
             GameUser gameUser = gameSession.getGameUser(userName);
 
-            String message = GameMessageCreator.createMessageStartGame(gameSession, userName, gMResource.getGameTime());
+            String message = GameMessageCreator.createMessageStartGame(gameSession, userName, gamemechResource.getGameTime());
 
             if (gameUser != null) {
                 sendData(userName, message);
@@ -176,7 +183,7 @@ public abstract class GamemechServiceImpl implements GamemechService {
             sendData(user.getName(), message);
 
             Message msg = new MsgAccAddScore(
-                    getAddress(),
+                    address,
                     messageSystem.getAddressService().getAccountServiceAddress(),
                     user.getName(),
                     user.getScore()

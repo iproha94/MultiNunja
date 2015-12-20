@@ -11,9 +11,6 @@ public final class MessageSystem {
     private final Map<Address, ConcurrentLinkedQueue<Message>> messages = new HashMap<>();
     private final AddressService addressService = new AddressService();
 
-    public MessageSystem() {
-    }
-
     public AddressService getAddressService() {
         return addressService;
     }

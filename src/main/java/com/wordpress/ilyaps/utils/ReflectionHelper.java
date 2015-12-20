@@ -10,7 +10,6 @@ import java.lang.reflect.Field;
  * Created by ilya on 01.11.15.
  */
 public class ReflectionHelper {
-    @SuppressWarnings("ConstantConditions")
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(ReflectionHelper.class);
 
@@ -18,7 +17,6 @@ public class ReflectionHelper {
     public static Object createInstance(@NotNull String className) {
         Object obj;
         try {
-            //noinspection ConstantConditions
             obj = Class.forName(className).newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ignored) {
             LOGGER.error(ignored);
@@ -37,7 +35,6 @@ public class ReflectionHelper {
                                      @NotNull String value) {
         Field field;
         try {
-            //noinspection ConstantConditions
             field = object.getClass().getDeclaredField(fieldName);
         } catch (NoSuchFieldException e) {
             LOGGER.error(e);
@@ -52,7 +49,6 @@ public class ReflectionHelper {
         field.setAccessible(true);
         try {
 
-            //noinspection ConstantConditions
             if (field.getType().equals(String.class)) {
                 field.set(object, value);
 

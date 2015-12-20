@@ -1,5 +1,7 @@
 package com.wordpress.ilyaps.multiNunjaGamemech;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Random;
 
 /**
@@ -10,14 +12,14 @@ public class Fruit {
     private int b;
     private int c;
     private int id;
-    private static Random rand = new Random();
-
+    @NotNull
+    private static final Random RAND = new Random();
 
     public void generateFruit(int id) {
         this.id = id;
-        a = rand.nextInt(200) - 100;
-        b = rand.nextInt(200) - 100;
-        c = rand.nextInt(100);
+        a = RAND.nextInt(200) - 100;
+        b = RAND.nextInt(200) - 100;
+        c = RAND.nextInt(100);
 
         if (a > 0) {
             c *= -1;

@@ -17,7 +17,7 @@ public class UserDAODB {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(UserDAODB.class);
     @NotNull
-    private Connection connection;
+    private final Connection connection;
 
     public UserDAODB(@NotNull Connection connection) {
         this.connection = connection;
@@ -35,7 +35,7 @@ public class UserDAODB {
     public UserProfile readByEmail(String email) throws SQLException {
         String query = "select * from user where email = '" + email + "' ";
 
-        UserProfile user = DBExecutor.execQuery(connection,
+        return DBExecutor.execQuery(connection,
             query,
             result -> {
                 UserProfile newuser = null;
@@ -49,13 +49,12 @@ public class UserDAODB {
 
                 return newuser;
             });
-
-        return user;
     }
 
     public int count() throws SQLException {
         String query = "SELECT count(*) FROM user";
-        Integer count =  DBExecutor.execQuery(connection, query,
+
+        return DBExecutor.execQuery(connection, query,
                 result -> {
                     if (result.next()) {
                         return result.getInt(1);
@@ -64,8 +63,6 @@ public class UserDAODB {
                         return 0;
                     }
                 });
-
-        return count;
     }
 
     public int deleteAll() throws SQLException {

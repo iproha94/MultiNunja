@@ -18,7 +18,7 @@ public class ScoreDAODB {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(ScoreDAODB.class);
     @NotNull
-    private Connection connection;
+    private final Connection connection;
 
     public ScoreDAODB(@NotNull Connection connection) {
         this.connection = connection;
@@ -48,9 +48,26 @@ public class ScoreDAODB {
         return list;
     }
 
+    @NotNull
+    public List<Score> read(@NotNull String name) throws SQLException {
+        List<Score> list = new ArrayList<>();
+        String query = "select * from score where name = '" + name + "' order by score desc;";
+        DBExecutor.execQuery(connection, query,
+                result -> {
+                    while (result.next()) {
+                        Score score = new Score(result.getString("name"), result.getInt("score"));
+                        list.add(score);
+                    }
+                    return null;
+                });
+
+        return list;
+    }
+
     public int count() throws SQLException {
         String query = "SELECT count(*) FROM score";
-        Integer count =  DBExecutor.execQuery(connection, query,
+
+        return DBExecutor.execQuery(connection, query,
                 result -> {
                     if (result.next()) {
                         return result.getInt(1);
@@ -59,8 +76,6 @@ public class ScoreDAODB {
                         return 0;
                     }
                 });
-
-        return count;
     }
 
     public int deleteAll() throws SQLException {

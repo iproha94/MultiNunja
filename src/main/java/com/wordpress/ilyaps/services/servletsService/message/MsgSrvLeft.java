@@ -3,16 +3,21 @@ package com.wordpress.ilyaps.services.servletsService.message;
 import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.messageSystem.Address;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by ilya on 13.12.15.
  */
 public class MsgSrvLeft extends MsgToServletsService {
-    private String sessionId;
-    private UserProfile profile;
-    private String email;
+    @NotNull
+    private final String sessionId;
+    @Nullable
+    private final UserProfile profile;
+    @NotNull
+    private final String email;
 
-    public MsgSrvLeft(Address from, Address to, String email, String sessionId, UserProfile profile) {
+    public MsgSrvLeft(@NotNull Address from, Address to, @NotNull String email, @NotNull String sessionId, @Nullable UserProfile profile) {
         super(from, to);
         this.sessionId = sessionId;
         this.profile = profile;
@@ -20,7 +25,7 @@ public class MsgSrvLeft extends MsgToServletsService {
     }
 
     @Override
-    protected void exec(ServletsService service) {
+    protected void exec(@NotNull ServletsService service) {
         service.left(email, sessionId, profile);
     }
 }

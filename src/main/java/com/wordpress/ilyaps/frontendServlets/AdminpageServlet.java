@@ -23,9 +23,9 @@ public class AdminpageServlet extends HttpServlet {
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
 
     @NotNull
-    private AccountService accService;
+    private final AccountService accService;
     @NotNull
-    private ServletsService srvService;
+    private final ServletsService srvService;
 
     public AdminpageServlet() {
         GameContext gameContext = GameContext.getInstance();

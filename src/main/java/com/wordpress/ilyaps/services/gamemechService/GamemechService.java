@@ -10,10 +10,10 @@ import java.util.Set;
  * Created by ilya on 13.12.15.
  */
 public interface GamemechService extends Abonent, Runnable {
-    void receiveData(String name, String data);
-    void sendData(String name, String data);
+    void receiveData(@NotNull String name, @NotNull String data);
+    void sendData(@NotNull String name, @NotNull String data);
     void addUser(@NotNull String name);
-    boolean removeUser(@NotNull String name);
-    Map<String, GameSession> getNameToGame();
-    Set<GameSession> getAllSessions();
+    void removeUser(@NotNull String name);
+    @NotNull Map<String, GameSession> getNameToGame();
+    @NotNull Set<GameSession> getAllSessions();
 }

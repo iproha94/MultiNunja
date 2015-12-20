@@ -19,7 +19,6 @@ import java.util.Map;
  * Created by ilya on 01.11.15.
  */
 public final class ResourceFactory {
-    @SuppressWarnings("ConstantConditions")
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(ResourceFactory.class);
 

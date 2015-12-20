@@ -29,6 +29,9 @@ public interface AccountService  extends Abonent, Runnable {
     @NotNull
     String getScore(int start, int amount);
 
+    @NotNull
+    String getScore(@NotNull String name);
+
     int countRegisteredUser();
 
     int countAuthorizedUser();

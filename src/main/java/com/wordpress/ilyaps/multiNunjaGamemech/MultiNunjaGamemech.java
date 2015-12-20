@@ -23,16 +23,15 @@ import java.util.concurrent.TimeUnit;
 public class MultiNunjaGamemech extends GamemechServiceImpl {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(MultiNunjaGamemech.class);
+    @NotNull
+    private final MultiNunjaResource multiNunjaResource;
 
-    private MultiNunjaResource multiNunjaResource;
-
-    private int maxFruit;
+    private final int maxFruit;
     private int pointerFruit = 0;
-    private List<Fruit> fruitList = new ArrayList<>(maxFruit);
+    private final List<Fruit> fruitList;
 
 
     public MultiNunjaGamemech() {
-
         GameContext gameContext = GameContext.getInstance();
         ResourcesContext resourcesContext = (ResourcesContext) gameContext.get(ResourcesContext.class);
         this.multiNunjaResource = (MultiNunjaResource) resourcesContext.get(MultiNunjaResource.class);
@@ -40,6 +39,7 @@ public class MultiNunjaGamemech extends GamemechServiceImpl {
         maxFruit = multiNunjaResource.getMaxFruit();
         int periodGenerate = multiNunjaResource.getPeriodGenerate();
 
+        fruitList = new ArrayList<>(maxFruit);
         for (int i = 0; i < maxFruit; ++i) {
             Fruit fruit = new Fruit();
             fruit.generateFruit(i);
@@ -63,7 +63,7 @@ public class MultiNunjaGamemech extends GamemechServiceImpl {
 
 
     @Override
-    public void receiveData(String name, String data) {
+    public void receiveData(@NotNull String name, @NotNull String data) {
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObj = jsonParser.parse(data).getAsJsonObject();
 
@@ -84,7 +84,6 @@ public class MultiNunjaGamemech extends GamemechServiceImpl {
         if ("message".equals(status)) {
             String text = jsonObj.get("text").getAsString();
             textInChat(name, text);
-            return;
         }
     }
 

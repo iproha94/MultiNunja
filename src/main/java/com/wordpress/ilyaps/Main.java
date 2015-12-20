@@ -39,40 +39,40 @@ public class Main {
     public static void main(@NotNull String[] args) {
         LOGGER.info("start of activation of server");
 
-        final GameContext gameСontext = GameContext.getInstance();
+        final GameContext GAMECONTEXT = GameContext.getInstance();
 
         final Configuration conf = new Configuration(PROPERTIES_FILE);
-        gameСontext.add(Configuration.class, conf);
+        GAMECONTEXT.add(Configuration.class, conf);
 
         final ResourcesContext resourcesContext = new ResourcesContext(conf.getValueOfProperty("resourcesDirectory"));
-        gameСontext.add(ResourcesContext.class, resourcesContext);
+        GAMECONTEXT.add(ResourcesContext.class, resourcesContext);
 
         final MessageSystem messageSystem = new MessageSystem();
-        gameСontext.add(MessageSystem.class, messageSystem);
+        GAMECONTEXT.add(MessageSystem.class, messageSystem);
 
         final SocketsService socketsService = new SocketsServiceImpl();
         final Thread socketsServiceThread = new Thread(socketsService);
         socketsServiceThread.setDaemon(true);
         socketsServiceThread.setName("socketsService");
-        gameСontext.add(SocketsService.class, socketsService);
+        GAMECONTEXT.add(SocketsService.class, socketsService);
 
         final ServletsService servletsService = new ServletsServiceImpl();
         final Thread servletsServiceThread = new Thread(servletsService);
         servletsServiceThread.setDaemon(true);
         servletsServiceThread.setName("servletsService");
-        gameСontext.add(ServletsService.class, servletsService);
+        GAMECONTEXT.add(ServletsService.class, servletsService);
 
         final AccountService accountService = new AccountServiceDB(PROPERTIES_FILE_DB);
         final Thread accountServiceThread = new Thread(accountService);
         accountServiceThread.setDaemon(true);
         accountServiceThread.setName("Account Service");
-        gameСontext.add(AccountService.class, accountService);
+        GAMECONTEXT.add(AccountService.class, accountService);
 
         final GamemechService gamemechService = new MultiNunjaGamemech();
         final Thread gamemechServiceThread = new Thread(gamemechService);
         gamemechServiceThread.setDaemon(true);
         gamemechServiceThread.setName("Gamemech Service");
-        gameСontext.add(GamemechService.class, gamemechService);
+        GAMECONTEXT.add(GamemechService.class, gamemechService);
 
 
         Servlet mainPage = new MainpageServlet();

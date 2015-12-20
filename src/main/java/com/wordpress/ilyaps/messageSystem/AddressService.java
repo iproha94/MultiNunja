@@ -5,6 +5,7 @@ import com.wordpress.ilyaps.services.accountService.AccountService;
 import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.services.gamemechService.GamemechService;
 import com.wordpress.ilyaps.services.socketsService.SocketsService;
+import org.jetbrains.annotations.NotNull;
 
 public final class AddressService {
     private Address servletsServiceAddress;
@@ -12,11 +13,11 @@ public final class AddressService {
     private Address gamemechServiceAddress;
     private Address accountServiceAddress;
 
-
     public void registerServletsService(ServletsService servletsService) {
         this.servletsServiceAddress = servletsService.getAddress();
     }
 
+    @NotNull
     public Address getServletsServiceAddress() {
         return servletsServiceAddress;
     }
@@ -25,6 +26,7 @@ public final class AddressService {
         this.socketsServiceAddress = socketsService.getAddress();
     }
 
+    @NotNull
     public Address getSocketsServiceAddress() {
         return socketsServiceAddress;
     }
@@ -33,6 +35,7 @@ public final class AddressService {
         this.accountServiceAddress = accountService.getAddress();
     }
 
+    @NotNull
     public Address getAccountServiceAddress() {
         return accountServiceAddress;
     }
@@ -41,6 +44,7 @@ public final class AddressService {
         this.gamemechServiceAddress = gamemechService.getAddress();
     }
 
+    @NotNull
     public Address getGamemechServiceAddress() {
         return gamemechServiceAddress;
     }

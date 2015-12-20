@@ -4,12 +4,13 @@ import com.wordpress.ilyaps.services.accountService.AccountService;
 import com.wordpress.ilyaps.messageSystem.Abonent;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author e.shubin
  */
 public abstract class MsgToAccountService extends Message {
-    public MsgToAccountService(Address from, Address to) {
+    public MsgToAccountService(@NotNull Address from, @NotNull Address to) {
         super(from, to);
     }
 
@@ -20,5 +21,5 @@ public abstract class MsgToAccountService extends Message {
         }
     }
 
-    protected abstract void exec(AccountService service);
+    protected abstract void exec(@NotNull AccountService service);
 }

@@ -17,13 +17,13 @@ public class DBService {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(DBService.class);
     @NotNull
-    private String nameDriver;
+    private final String nameDriver;
     @NotNull
-    private String jdbcUrl;
+    private final String jdbcUrl;
     @NotNull
-    private String userName;
+    private final String userName;
     @NotNull
-    private String password;
+    private final String password;
 
     public DBService(@NotNull String configurationFileName) {
         DBConfiguration dbConfiguration = new DBConfiguration(configurationFileName);

@@ -23,7 +23,7 @@ public class LeavingServlet extends HttpServlet {
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
     @NotNull
-    private ServletsService srvService;
+    private final ServletsService srvService;
 
     public LeavingServlet(@NotNull ServletsService srvService) {
         this.srvService = srvService;

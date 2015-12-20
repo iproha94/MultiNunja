@@ -13,11 +13,11 @@ import org.jetbrains.annotations.NotNull;
 public class MsgAccRegister extends MsgToAccountService {
 
     @NotNull
-    private String name;
+    private final String name;
     @NotNull
-    private String email;
+    private final String email;
     @NotNull
-    private String password;
+    private final String password;
 
     public MsgAccRegister(@NotNull Address from,
                           @NotNull Address to,
@@ -32,7 +32,7 @@ public class MsgAccRegister extends MsgToAccountService {
     }
 
     @Override
-    protected void exec(AccountService service) {
+    protected void exec(@NotNull AccountService service) {
         UserProfile result = service.register(name, email, password);
         final Message backMsg = new MsgSrvRegistered(
                 this.getTo(),

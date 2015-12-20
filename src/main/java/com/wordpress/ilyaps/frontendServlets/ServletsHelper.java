@@ -43,7 +43,7 @@ public class ServletsHelper {
 
     public static void signinInResponse(@NotNull HttpServletResponse response) {
         try (PrintWriter pw = response.getWriter()) {
-            pw.println(PageGenerator.getPage("auth/signin.html", new HashMap<String, Object>()));
+            pw.println(PageGenerator.getPage("auth/signin.html", new HashMap<>()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,7 +51,7 @@ public class ServletsHelper {
 
     public static void signupInResponse(@NotNull HttpServletResponse response) {
         try (PrintWriter pw = response.getWriter()) {
-            pw.println(PageGenerator.getPage("auth/signup.html", new HashMap<String, Object>()));
+            pw.println(PageGenerator.getPage("auth/signup.html", new HashMap<>()));
         } catch (IOException e) {
             e.printStackTrace();
         }

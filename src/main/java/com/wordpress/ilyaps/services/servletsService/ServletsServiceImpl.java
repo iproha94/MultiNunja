@@ -1,6 +1,6 @@
 package com.wordpress.ilyaps.services.servletsService;
 
-import com.wordpress.ilyaps.ThreadSettings;
+import com.wordpress.ilyaps.services.ThreadSettings;
 import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.services.accountService.message.MsgAccAuthorization;
 import com.wordpress.ilyaps.services.accountService.message.MsgAccLeaving;
@@ -157,14 +157,14 @@ public class ServletsServiceImpl implements ServletsService {
 
     @Override
     public void run() {
-        LOGGER.info("старт потока");
+        LOGGER.info("start thread");
 
         while (true) {
             messageSystem.execForAbonent(this);
             try {
                 Thread.sleep(ThreadSettings.SLEEP_TIME);
             } catch (InterruptedException e) {
-                LOGGER.error("засыпания потока");
+                LOGGER.error("sleep thread");
                 LOGGER.error(e);
             }
         }

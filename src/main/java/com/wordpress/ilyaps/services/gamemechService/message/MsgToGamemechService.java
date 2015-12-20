@@ -4,6 +4,7 @@ import com.wordpress.ilyaps.services.gamemechService.GamemechService;
 import com.wordpress.ilyaps.messageSystem.Abonent;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by ilya on 13.12.15.
@@ -20,5 +21,5 @@ public abstract class MsgToGamemechService extends Message{
         }
     }
 
-    protected abstract void exec(GamemechService service);
+    protected abstract void exec(@NotNull GamemechService service);
 }

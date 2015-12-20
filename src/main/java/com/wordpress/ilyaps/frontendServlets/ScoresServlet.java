@@ -1,8 +1,6 @@
 package com.wordpress.ilyaps.frontendServlets;
 
 import com.wordpress.ilyaps.services.accountService.AccountService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletException;
@@ -20,7 +18,7 @@ public class ScoresServlet extends HttpServlet {
     private static final int DEFAULT_START = 0;
 
     @NotNull
-    private AccountService accService;
+    private final AccountService accService;
 
     public ScoresServlet(@NotNull AccountService accService) {
         this.accService = accService;
@@ -32,9 +30,31 @@ public class ScoresServlet extends HttpServlet {
         response.setCharacterEncoding("utf-8");
         response.setContentType("text/html;charset=utf-8");
 
-        String listScore = accService.getScore(DEFAULT_START, DEFAULT_AMOUNT);
+        int amount;
+        try {
+            amount = Integer.parseInt(request.getParameter("amount"));
+        } catch (NumberFormatException e) {
+            amount = DEFAULT_AMOUNT;
+        }
+
+        int start;
+        try {
+            start = Integer.parseInt(request.getParameter("start"));
+        } catch (NumberFormatException e) {
+            start = DEFAULT_START;
+        }
+
+        String name = request.getParameter("name");
+
+        String msg;
+        if (name != null) {
+            msg = accService.getScore(name);
+        } else {
+            msg = accService.getScore(start, amount);
+        }
+
         try (PrintWriter pw = response.getWriter()) {
-            pw.println(listScore);
+            pw.println(msg);
         }
     }
 

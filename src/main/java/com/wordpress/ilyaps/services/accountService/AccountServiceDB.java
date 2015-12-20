@@ -2,7 +2,7 @@ package com.wordpress.ilyaps.services.accountService;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.wordpress.ilyaps.ThreadSettings;
+import com.wordpress.ilyaps.services.ThreadSettings;
 import com.wordpress.ilyaps.databaseHelpers.DBService;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -54,6 +55,7 @@ public class AccountServiceDB implements AccountService {
     }
 
 
+    @NotNull
     @Override
     public Address getAddress() {
         return address;
@@ -155,7 +157,7 @@ public class AccountServiceDB implements AccountService {
     @Override
     public String getScore(int start, int amount) {
         JsonObject result = new JsonObject();
-        result.addProperty("status", 200);
+        result.addProperty("status", HttpServletResponse.SC_OK);
 
         JsonArray arr = new JsonArray();
 
@@ -171,6 +173,34 @@ public class AccountServiceDB implements AccountService {
 
         } catch (SQLException ignored) {
             LOGGER.warn("scoredao.insert");
+            LOGGER.warn(ignored);
+        }
+
+        result.add("players", arr);
+
+        return result.toString();
+    }
+
+    @NotNull
+    @Override
+    public String getScore(@NotNull String name) {
+        JsonObject result = new JsonObject();
+        result.addProperty("status", HttpServletResponse.SC_OK);
+
+        JsonArray arr = new JsonArray();
+
+        try (Connection con = dbService.openConnection()) {
+            ScoreDAODB scoredao = new ScoreDAODB(con);
+
+            for (Score score : scoredao.read(name)) {
+                JsonObject guser = new JsonObject();
+                guser.addProperty("name", score.getName());
+                guser.addProperty("score", score.getScore());
+                arr.add(guser);
+            }
+
+        } catch (SQLException ignored) {
+            LOGGER.warn("scoredao.getScore");
             LOGGER.warn(ignored);
         }
 

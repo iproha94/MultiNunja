@@ -1,6 +1,5 @@
 package com.wordpress.ilyaps.frontendServlets;
 
-import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.frontendSockets.GameWebSocketCreator;
 import com.wordpress.ilyaps.serverHelpers.Configuration;
 import com.wordpress.ilyaps.serverHelpers.GameContext;

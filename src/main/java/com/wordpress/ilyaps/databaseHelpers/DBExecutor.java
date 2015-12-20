@@ -1,7 +1,5 @@
 package com.wordpress.ilyaps.databaseHelpers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,9 +12,6 @@ import java.sql.Statement;
  * Created by ilyap on 23.11.2015.
  */
 public class DBExecutor {
-    @SuppressWarnings("ConstantConditions")
-    @NotNull
-    static final Logger LOGGER = LogManager.getLogger(DBExecutor.class);
 
     @Nullable
     public static <T> T execQuery(@NotNull Connection connection,
@@ -37,7 +32,7 @@ public class DBExecutor {
                           @NotNull String update)
             throws SQLException
     {
-        int count = 0;
+        int count;
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(update);
             count = stmt.getUpdateCount();

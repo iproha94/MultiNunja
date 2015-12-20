@@ -9,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MsgAccAddScore extends MsgToAccountService {
     @NotNull
-    private String name;
+    private final String name;
 
-    private int score;
+    private final int score;
 
     public MsgAccAddScore(
             @NotNull Address from,
@@ -25,7 +25,7 @@ public class MsgAccAddScore extends MsgToAccountService {
     }
 
     @Override
-    protected void exec(AccountService service) {
+    protected void exec(@NotNull AccountService service) {
         service.addScore(name, score);
     }
 }

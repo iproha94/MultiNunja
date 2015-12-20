@@ -33,7 +33,6 @@ public class PageGenerator {
             e.printStackTrace();
         }
 
-        //noinspection ObjectToString
         return stream.toString();
     }
 }

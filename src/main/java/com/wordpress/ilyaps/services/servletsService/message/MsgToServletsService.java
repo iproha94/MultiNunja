@@ -5,6 +5,7 @@ import com.wordpress.ilyaps.services.servletsService.ServletsService;
 import com.wordpress.ilyaps.messageSystem.Abonent;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author e.shubin
@@ -21,5 +22,5 @@ public abstract class MsgToServletsService extends Message {
         }
     }
 
-    protected abstract void exec(ServletsService service);
+    protected abstract void exec(@NotNull ServletsService service);
 }

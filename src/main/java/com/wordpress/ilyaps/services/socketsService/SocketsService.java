@@ -10,15 +10,15 @@ import org.jetbrains.annotations.NotNull;
 public interface SocketsService extends Abonent, Runnable {
     void add(@NotNull GameWebSocket userSocket);
 
-    boolean remove(@NotNull String name);
+    void remove(@NotNull String name);
 
 
-    void openSocket(String name);
+    void openSocket(@NotNull String name);
 
-    void closeSocket(String name);
+    void closeSocket(@NotNull String name);
 
 
-    void receiveData(String name, String data);
+    void receiveData(@NotNull String name, @NotNull String data);
 
-    void sendData(String name, String data);
+    void sendData(@NotNull String name, @NotNull String data);
 }

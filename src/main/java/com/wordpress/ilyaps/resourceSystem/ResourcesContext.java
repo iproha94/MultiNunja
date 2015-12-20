@@ -3,7 +3,6 @@ package com.wordpress.ilyaps.resourceSystem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import java.util.Map;
  * Created by ilya on 27.11.15.
  */
 public class ResourcesContext {
-    @SuppressWarnings("ConstantConditions")
     @NotNull
     static final Logger LOGGER = LogManager.getLogger(ResourcesContext.class);
 

@@ -1,6 +1,6 @@
 package com.wordpress.ilyaps.services.socketsService;
 
-import com.wordpress.ilyaps.ThreadSettings;
+import com.wordpress.ilyaps.services.ThreadSettings;
 import com.wordpress.ilyaps.frontendSockets.GameWebSocket;
 import com.wordpress.ilyaps.services.gamemechService.message.MsgGmmCloseSocket;
 import com.wordpress.ilyaps.services.gamemechService.message.MsgGmmOpenSocket;
@@ -32,9 +32,9 @@ public class SocketsServiceImpl implements SocketsService {
 
 
     @Override
-    public void openSocket(String name) {
+    public void openSocket(@NotNull String name) {
         Message msg = new MsgGmmOpenSocket(
-                getAddress(),
+                address,
                 messageSystem.getAddressService().getGamemechServiceAddress(),
                 name
         );
@@ -42,9 +42,9 @@ public class SocketsServiceImpl implements SocketsService {
     }
 
     @Override
-    public void closeSocket(String name) {
+    public void closeSocket(@NotNull String name) {
         Message msg = new MsgGmmCloseSocket(
-                getAddress(),
+                address,
                 messageSystem.getAddressService().getGamemechServiceAddress(),
                 name
         );
@@ -52,9 +52,9 @@ public class SocketsServiceImpl implements SocketsService {
     }
 
     @Override
-    public void receiveData(String name, String data) {
+    public void receiveData(@NotNull String name, @NotNull String data) {
         Message msg = new MsgGmmReceiveData(
-                getAddress(),
+                address,
                 messageSystem.getAddressService().getGamemechServiceAddress(),
                 name,
                 data
@@ -63,7 +63,7 @@ public class SocketsServiceImpl implements SocketsService {
     }
 
     @Override
-    public void sendData(String name, String data) {
+    public void sendData(@NotNull String name, @NotNull String data) {
         GameWebSocket gameWebSocket = userSockets.get(name);
         if (gameWebSocket == null) {
             LOGGER.error("gameWebSocket == null");
@@ -80,8 +80,8 @@ public class SocketsServiceImpl implements SocketsService {
     }
 
     @Override
-    public boolean remove(@NotNull String name) {
-        return userSockets.remove(name) != null;
+    public void remove(@NotNull String name) {
+        userSockets.remove(name);
     }
 
     public SocketsServiceImpl() {
@@ -92,6 +92,7 @@ public class SocketsServiceImpl implements SocketsService {
         messageSystem.getAddressService().registerSocketsService(this);
     }
 
+    @NotNull
     @Override
     public Address getAddress() {
         return address;

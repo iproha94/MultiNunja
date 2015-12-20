@@ -5,6 +5,7 @@ import com.wordpress.ilyaps.messageSystem.Abonent;
 import com.wordpress.ilyaps.messageSystem.Address;
 import com.wordpress.ilyaps.messageSystem.Message;
 import com.wordpress.ilyaps.services.socketsService.SocketsService;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author e.shubin
@@ -21,5 +22,5 @@ public abstract class MsgToSocketsService extends Message {
         }
     }
 
-    protected abstract void exec(SocketsService service);
+    protected abstract void exec(@NotNull SocketsService service);
 }
