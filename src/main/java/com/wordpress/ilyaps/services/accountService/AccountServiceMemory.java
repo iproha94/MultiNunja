@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by ilya on 12.12.15.
@@ -31,9 +32,9 @@ public class AccountServiceMemory implements AccountService {
     @NotNull
     private final MessageSystem messageSystem;
     @NotNull
-    private final Map<String, UserProfile> users = new HashMap<>();
+    private final Map<String, UserProfile> users = new ConcurrentHashMap<>();
     @NotNull
-    private final Map<String, UserProfile> sessions = new HashMap<>();
+    private final Map<String, UserProfile> sessions = new ConcurrentHashMap<>();
     @NotNull
     private final List<Score> listScores = new ArrayList<>();
 

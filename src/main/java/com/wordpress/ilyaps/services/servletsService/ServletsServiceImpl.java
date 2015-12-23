@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by ilya on 12.12.15.
@@ -29,9 +30,9 @@ public class ServletsServiceImpl implements ServletsService {
     private final MessageSystem messageSystem;
 
     @NotNull
-    private final Map<String, UserProfile> sessionToProfile = new HashMap<>();
+    private final Map<String, UserProfile> sessionToProfile = new ConcurrentHashMap<>();
     @NotNull
-    private final Map<String, UserState> emailToState = new HashMap<>();
+    private final Map<String, UserState> emailToState = new ConcurrentHashMap<>();
 
     public ServletsServiceImpl() {
         GameContext gameContext = GameContext.getInstance();

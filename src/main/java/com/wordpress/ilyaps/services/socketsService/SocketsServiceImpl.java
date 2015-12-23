@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by ilya on 27.10.15.
@@ -28,7 +29,7 @@ public class SocketsServiceImpl implements SocketsService {
     static final Logger LOGGER = LogManager.getLogger(SocketsServiceImpl.class);
 
     @NotNull
-    private final Map<String, GameWebSocket> userSockets = new HashMap<>();
+    private final Map<String, GameWebSocket> userSockets = new ConcurrentHashMap<>();
 
 
     @Override

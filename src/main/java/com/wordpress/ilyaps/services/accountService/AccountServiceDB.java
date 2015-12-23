@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by ilya on 19.12.15.
@@ -37,7 +38,7 @@ public class AccountServiceDB implements AccountService {
     @NotNull
     private final DBService dbService;
     @NotNull
-    private final Map<String, UserProfile> sessions = new HashMap<>();
+    private final Map<String, UserProfile> sessions = new ConcurrentHashMap<>();
 
     public AccountServiceDB(@NotNull String configurationFileName) {
         dbService = new DBService(configurationFileName);

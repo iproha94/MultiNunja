@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by ilya on 27.10.15.
@@ -11,7 +12,7 @@ import java.util.*;
 public class GameSession {
     private final long startTime;
     @NotNull
-    private final Map<String, GameUser> users = new HashMap<>();
+    private final Map<String, GameUser> users = new ConcurrentHashMap<>();
 
     public GameSession(@NotNull Set<String> namesPlayers) {
         startTime = new Date().getTime();

@@ -13,9 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by ilya on 13.12.15.
@@ -30,11 +28,11 @@ public abstract class GamemechServiceImpl implements GamemechService {
     @NotNull
     private final GamemechResource gamemechResource;
     @NotNull
-    private final Map<String, GameSession> nameToGame = new HashMap<>();
+    private final Map<String, GameSession> nameToGame = new ConcurrentHashMap<>();
     @NotNull
-    private final Set<GameSession> allSessions = new HashSet<>();
+    private final Set<GameSession> allSessions = new CopyOnWriteArraySet<>();
     @NotNull
-    private final Set<String> namesPlayers = new HashSet<>();
+    private final Set<String> namesPlayers = new CopyOnWriteArraySet<>();
     final int stepTime;
     final int gameTime;
 
@@ -95,13 +93,10 @@ public abstract class GamemechServiceImpl implements GamemechService {
     }
 
     private void gmStep() {
-        for (Iterator<GameSession> iterator = allSessions.iterator(); iterator.hasNext(); ) {
-            GameSession session = iterator.next();
-            if (session == null) {
-                LOGGER.warn("session == null");
-            } else if (session.getSessionTime() > gameTime) {
+        for (GameSession session : allSessions) {
+            if (session.getSessionTime() > gameTime) {
                 finishGame(session);
-                iterator.remove();
+                allSessions.remove(session);
             }
         }
     }
@@ -122,7 +117,7 @@ public abstract class GamemechServiceImpl implements GamemechService {
         namesPlayers.add(name);
         LOGGER.info(name + " go in game");
 
-        if (namesPlayers.size() == gamemechResource.getNumberPlayers()) {
+        if (namesPlayers.size() >= gamemechResource.getNumberPlayers()) {
             startGame();
             namesPlayers.clear();
         }
@@ -168,7 +163,6 @@ public abstract class GamemechServiceImpl implements GamemechService {
 
             if (gameUser != null) {
                 sendData(userName, message);
-
             } else {
                 LOGGER.error("gameuser == null");
             }
