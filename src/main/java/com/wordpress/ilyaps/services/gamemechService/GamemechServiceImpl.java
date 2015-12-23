@@ -26,8 +26,6 @@ public abstract class GamemechServiceImpl implements GamemechService {
     @NotNull
     private final MessageSystem messageSystem;
     @NotNull
-    private final GamemechResource gamemechResource;
-    @NotNull
     private final Map<String, GameSession> nameToGame = new ConcurrentHashMap<>();
     @NotNull
     private final Set<GameSession> allSessions = new CopyOnWriteArraySet<>();
@@ -35,6 +33,7 @@ public abstract class GamemechServiceImpl implements GamemechService {
     private final Set<String> namesPlayers = new CopyOnWriteArraySet<>();
     final int stepTime;
     final int gameTime;
+    final int maxPlayers;
 
     public GamemechServiceImpl() {
         GameContext gameContext = GameContext.getInstance();
@@ -44,13 +43,15 @@ public abstract class GamemechServiceImpl implements GamemechService {
         messageSystem.getAddressService().registerGamemechService(this);
 
         ResourcesContext resourcesContext = (ResourcesContext) gameContext.get(ResourcesContext.class);
-        this.gamemechResource = (GamemechResource) resourcesContext.get(GamemechResource.class);
+        GamemechResource gamemechResource = (GamemechResource) resourcesContext.get(GamemechResource.class);
 
         stepTime = gamemechResource.getStepTime();
         gameTime = gamemechResource.getGameTime();
+        maxPlayers = gamemechResource.getNumberPlayers();
 
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(this::gmStep, 0, stepTime, TimeUnit.MILLISECONDS);
+        service.scheduleAtFixedRate(this::stepGameStart, 0, stepTime, TimeUnit.MILLISECONDS);
+        service.scheduleAtFixedRate(this::stepGameFinish, 0, stepTime, TimeUnit.MILLISECONDS);
     }
 
 
@@ -92,7 +93,7 @@ public abstract class GamemechServiceImpl implements GamemechService {
         }
     }
 
-    private void gmStep() {
+    private void stepGameFinish() {
         for (GameSession session : allSessions) {
             if (session.getSessionTime() > gameTime) {
                 finishGame(session);
@@ -101,7 +102,21 @@ public abstract class GamemechServiceImpl implements GamemechService {
         }
     }
 
-    @Override
+    private void stepGameStart() {
+        while (namesPlayers.size() >= maxPlayers) {
+            Set<String> setNames = new HashSet<>(maxPlayers);
+            List<String> listNames = new ArrayList<>(namesPlayers);
+
+            for (int i = 0; i < maxPlayers; ++i) {
+                setNames.add(listNames.get(i));
+                namesPlayers.remove(listNames.get(i));
+            }
+
+            startGame(setNames);
+        }
+    }
+
+        @Override
     public void sendData(@NotNull String name, @NotNull String data) {
         Message msg = new MsgSckSendData(
                 address,
@@ -116,16 +131,11 @@ public abstract class GamemechServiceImpl implements GamemechService {
     public void addUser(@NotNull String name) {
         namesPlayers.add(name);
         LOGGER.info(name + " go in game");
-
-        if (namesPlayers.size() >= gamemechResource.getNumberPlayers()) {
-            startGame();
-            namesPlayers.clear();
-        }
     }
 
     @Override
     public void removeUser(@NotNull String name) {
-        LOGGER.info("go out game" + name);
+        LOGGER.info(name + " go out game");
         if (namesPlayers.remove(name)) {
             return;
         }
@@ -150,22 +160,16 @@ public abstract class GamemechServiceImpl implements GamemechService {
         }
     }
 
-    private void startGame() {
-        GameSession gameSession = new GameSession(namesPlayers);
+    private void startGame(Set<String> setNames) {
+        GameSession gameSession = new GameSession(setNames);
         allSessions.add(gameSession);
         LOGGER.info("start game");
 
-        for (String userName : namesPlayers) {
-            nameToGame.put(userName, gameSession);
-            GameUser gameUser = gameSession.getGameUser(userName);
+        for (GameUser user : gameSession.getGameUsers()) {
+            nameToGame.put(user.getName(), gameSession);
 
-            String message = GameMessageCreator.createMessageStartGame(gameSession, userName, gamemechResource.getGameTime());
-
-            if (gameUser != null) {
-                sendData(userName, message);
-            } else {
-                LOGGER.error("gameuser == null");
-            }
+            String message = GameMessageCreator.createMessageStartGame(gameSession, user.getName(), gameTime);
+            sendData(user.getName(), message);
         }
     }
 
