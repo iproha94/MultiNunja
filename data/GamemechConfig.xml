@@ -1,5 +1,5 @@
 <class type='com.wordpress.ilyaps.services.gamemechService.GamemechResource'>
     <stepTime>500</stepTime>
-    <gameTime>60000</gameTime>
+    <gameTime>30000</gameTime>
     <numberPlayers>2</numberPlayers>
 </class>

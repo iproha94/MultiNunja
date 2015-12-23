@@ -90,7 +90,7 @@ public class AccountServiceDB implements AccountService {
             UserDAODB userdao = new UserDAODB(con);
             count = userdao.insert(user);
         } catch (SQLException ignored) {
-            LOGGER.info("userdao.insert");
+            LOGGER.info("userdao.register");
             LOGGER.info(ignored);
         }
 
