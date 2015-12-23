@@ -24,6 +24,20 @@ public class ScoreDAODB {
         this.connection = connection;
     }
 
+    public void createTable() throws SQLException {
+        String query = "CREATE TABLE IF NOT EXISTS score ( " +
+                "  name VARCHAR(45) NOT NULL, " +
+                "  score INT NULL DEFAULT 0, " +
+                "  CONSTRAINT fk_score_1 " +
+                "    FOREIGN KEY (name) " +
+                "    REFERENCES user (name) " +
+                "    ON DELETE NO ACTION " +
+                "    ON UPDATE NO ACTION) " +
+                "ENGINE = InnoDB;";
+
+        DBExecutor.execUpdate(connection, query);
+    }
+
     public int insert(@NotNull Score score) throws SQLException {
         String query = "insert into score (name, score) " +
                 "values ( '" + score.getName() + "' ,  "

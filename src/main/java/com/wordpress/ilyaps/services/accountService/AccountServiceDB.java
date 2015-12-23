@@ -2,6 +2,7 @@ package com.wordpress.ilyaps.services.accountService;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.wordpress.ilyaps.databaseHelpers.DBExecutor;
 import com.wordpress.ilyaps.services.ThreadSettings;
 import com.wordpress.ilyaps.databaseHelpers.DBService;
 import com.wordpress.ilyaps.messageSystem.Address;
@@ -46,6 +47,8 @@ public class AccountServiceDB implements AccountService {
         messageSystem.addService(this);
         messageSystem.getAddressService().registerAccountService(this);
 
+        createTables();
+
         register("Egor","test1@mail.ru","1234");
         register("Ilya","test2@mail.ru","1234");
         register("Jenya","test3@mail.ru","1234");
@@ -54,6 +57,18 @@ public class AccountServiceDB implements AccountService {
 
     }
 
+    public void createTables() {
+        try (Connection con = dbService.openConnection()) {
+            UserDAODB userdao = new UserDAODB(con);
+            userdao.createTable();
+
+            ScoreDAODB scoredao = new ScoreDAODB(con);
+            scoredao.createTable();
+        } catch (SQLException ignored) {
+            LOGGER.error("AccountServiceDB.createTables", ignored);
+            throw new RuntimeException();
+        }
+    }
 
     @NotNull
     @Override

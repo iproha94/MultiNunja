@@ -23,6 +23,19 @@ public class UserDAODB {
         this.connection = connection;
     }
 
+    public void createTable() throws SQLException {
+        String query = "CREATE TABLE IF NOT EXISTS user ( " +
+                "  name VARCHAR(45) NOT NULL, " +
+                "  email VARCHAR(45) NOT NULL, " +
+                "  password VARCHAR(45) NOT NULL, " +
+                "  UNIQUE INDEX name_UNIQUE (name ASC), " +
+                "  UNIQUE INDEX email_UNIQUE (email ASC), " +
+                "  PRIMARY KEY (name)) " +
+                "ENGINE = InnoDB;";
+
+        DBExecutor.execUpdate(connection, query);
+    }
+
     public int insert(@NotNull UserProfile user) throws SQLException {
         String query = "insert into user (name, password, email) " +
                 "values ( '" + user.getName() + "' , '"
