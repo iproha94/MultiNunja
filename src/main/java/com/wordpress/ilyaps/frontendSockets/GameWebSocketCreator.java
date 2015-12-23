@@ -1,5 +1,6 @@
 package com.wordpress.ilyaps.frontendSockets;
 
+import com.wordpress.ilyaps.services.accountService.AccountService;
 import com.wordpress.ilyaps.services.accountService.dataset.UserProfile;
 import com.wordpress.ilyaps.serverHelpers.GameContext;
 import com.wordpress.ilyaps.services.servletsService.ServletsService;
@@ -20,20 +21,20 @@ public class GameWebSocketCreator implements WebSocketCreator {
     @NotNull
     private final SocketsService sckService;
     @NotNull
-    private final ServletsService srvService;
+    private final AccountService accService;
 
     public GameWebSocketCreator() {
         GameContext gameContext = GameContext.getInstance();
 
         this.sckService = (SocketsService) gameContext.get(SocketsService.class);
-        this.srvService = (ServletsService) gameContext.get(ServletsService.class);
+        this.accService = (AccountService) gameContext.get(AccountService.class);
     }
 
     @Override
     public Object createWebSocket(ServletUpgradeRequest req, ServletUpgradeResponse resp) {
         String sessionId = req.getHttpServletRequest().getSession().getId();
 
-        UserProfile profile = srvService.getUserProfile(sessionId);
+        UserProfile profile = accService.getAuthorizedUser(sessionId);
 
         if (profile == null) {
             LOGGER.error("profile == null");

@@ -130,6 +130,33 @@ public class AccountServiceDB implements AccountService {
 
     @Nullable
     @Override
+    public UserProfile fastauthorization(@NotNull String sessionId, @NotNull String username, @NotNull String password) {
+        int count = 0;
+        String email = username + "@fakemail.ru";
+        UserProfile user = new UserProfile(username, email, password);
+        try (Connection con = dbService.openConnection()) {
+            UserDAODB userdao = new UserDAODB(con);
+            count = userdao.insert(user);
+        } catch (SQLException ignored) {
+            LOGGER.info("userdao.register");
+            LOGGER.info(ignored);
+        }
+
+        if (count == 0) {
+            return null;
+        }
+
+        UserProfile profile = getRegisteredUser(email);
+        if (profile == null || !password.equals(profile.getPassword())) {
+            return null;
+        }
+
+        sessions.put(sessionId, profile);
+        return profile;
+    }
+
+    @Nullable
+    @Override
     public UserProfile leaving(@NotNull String sessionId) {
         return sessions.remove(sessionId);
     }

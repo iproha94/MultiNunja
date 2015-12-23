@@ -49,6 +49,14 @@ public class ServletsHelper {
         }
     }
 
+    public static void fastauthInResponse(@NotNull HttpServletResponse response) {
+        try (PrintWriter pw = response.getWriter()) {
+            pw.println(PageGenerator.getPage("auth/fastauth.html", new HashMap<>()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void signupInResponse(@NotNull HttpServletResponse response) {
         try (PrintWriter pw = response.getWriter()) {
             pw.println(PageGenerator.getPage("auth/signup.html", new HashMap<>()));

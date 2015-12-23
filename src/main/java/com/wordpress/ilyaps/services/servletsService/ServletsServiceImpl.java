@@ -139,9 +139,19 @@ public class ServletsServiceImpl implements ServletsService {
     }
 
     @Override
+    public void addSession(@NotNull String sessionId, @NotNull UserProfile profile) {
+        sessionToProfile.put(sessionId, profile);
+    }
+
+    @Override
     public void clearAll() {
         emailToState.clear();
         sessionToProfile.clear();
+    }
+
+    @Override
+    public void addState(String email, UserState state) {
+        emailToState.put(email, state);
     }
 
     @NotNull

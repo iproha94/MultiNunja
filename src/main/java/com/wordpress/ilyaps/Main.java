@@ -81,7 +81,8 @@ public class Main {
         Servlet logout = new LeavingServlet(servletsService);
         Servlet admin = new AdminpageServlet();
         Servlet scores = new ScoresServlet(accountService);
-        Servlet checkAuthorization = new CheckauthServlet(accountService);
+        Servlet checkauth = new CheckauthServlet(accountService);
+        Servlet fastauth = new FastauthServlet(accountService, servletsService);
         WebSocketServlet game = new GameServlet();
 
         final ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -93,7 +94,8 @@ public class Main {
         context.addServlet(new ServletHolder(game), conf.getValueOfProperty("gameSocketUrl"));
         context.addServlet(new ServletHolder(admin), conf.getValueOfProperty("adminPageUrl"));
         context.addServlet(new ServletHolder(scores), conf.getValueOfProperty("scoresPageUrl"));
-        context.addServlet(new ServletHolder(checkAuthorization), conf.getValueOfProperty("checkauthPageUrl"));
+        context.addServlet(new ServletHolder(checkauth), conf.getValueOfProperty("checkauthPageUrl"));
+        context.addServlet(new ServletHolder(fastauth), conf.getValueOfProperty("fastauthPageUrl"));
 
 
         final ResourceHandler resourceHandler = new ResourceHandler();

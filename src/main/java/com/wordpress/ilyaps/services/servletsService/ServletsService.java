@@ -29,5 +29,9 @@ public interface ServletsService extends Abonent, Runnable {
 
     void removeUserState(@NotNull String email);
 
+    void addSession(@NotNull String sessionId, @NotNull UserProfile profile);
+
     void clearAll();
+
+    void addState(String email, UserState state);
 }

@@ -24,7 +24,7 @@ import static com.wordpress.ilyaps.frontendServlets.ServletsHelper.printInRespon
  */
 public class AuthorizationServlet extends HttpServlet {
     @NotNull
-    static final Logger LOGGER = LogManager.getLogger(RegisterServlet.class);
+    static final Logger LOGGER = LogManager.getLogger(AuthorizationServlet.class);
     @NotNull
     private final ServletsService srvService;
 

@@ -103,6 +103,12 @@ public class AccountServiceMemory implements AccountService {
 
     @Nullable
     @Override
+    public UserProfile fastauthorization(@NotNull String sessionId, @NotNull String username, @NotNull String password) {
+        return null;
+    }
+
+    @Nullable
+    @Override
     public UserProfile leaving(@NotNull String sessionId) {
         return sessions.remove(sessionId);
     }

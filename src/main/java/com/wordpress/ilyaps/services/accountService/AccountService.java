@@ -16,6 +16,9 @@ public interface AccountService  extends Abonent, Runnable {
     UserProfile authorization(@NotNull String sessionId, @NotNull String email, @NotNull String password);
 
     @Nullable
+    UserProfile fastauthorization(@NotNull String sessionId, @NotNull String username, @NotNull String password);
+
+    @Nullable
     UserProfile leaving(@NotNull String sessionId);
 
     @Nullable
