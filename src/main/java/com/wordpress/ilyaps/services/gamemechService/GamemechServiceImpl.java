@@ -50,8 +50,7 @@ public abstract class GamemechServiceImpl implements GamemechService {
         maxPlayers = gamemechResource.getNumberPlayers();
 
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(this::stepGameStart, 0, stepTime, TimeUnit.MILLISECONDS);
-        service.scheduleAtFixedRate(this::stepGameFinish, 0, stepTime, TimeUnit.MILLISECONDS);
+        service.scheduleAtFixedRate(this::stepGame, 0, stepTime, TimeUnit.MILLISECONDS);
     }
 
 
@@ -93,6 +92,11 @@ public abstract class GamemechServiceImpl implements GamemechService {
         }
     }
 
+    private void stepGame() {
+        stepGameFinish();
+        stepGameStart();
+    }
+
     private void stepGameFinish() {
         for (GameSession session : allSessions) {
             if (session.getSessionTime() > gameTime) {
@@ -103,13 +107,18 @@ public abstract class GamemechServiceImpl implements GamemechService {
     }
 
     private void stepGameStart() {
-        while (namesPlayers.size() >= maxPlayers) {
+        List<String> listNames = new ArrayList<>(namesPlayers);
+
+        while (listNames.size() >= maxPlayers) {
             Set<String> setNames = new HashSet<>(maxPlayers);
-            List<String> listNames = new ArrayList<>(namesPlayers);
 
             for (int i = 0; i < maxPlayers; ++i) {
                 setNames.add(listNames.get(i));
                 namesPlayers.remove(listNames.get(i));
+            }
+
+            for (String name : setNames) {
+                listNames.remove(name);
             }
 
             startGame(setNames);

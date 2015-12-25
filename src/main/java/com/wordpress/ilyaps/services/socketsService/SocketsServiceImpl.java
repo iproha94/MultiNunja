@@ -67,7 +67,7 @@ public class SocketsServiceImpl implements SocketsService {
     public void sendData(@NotNull String name, @NotNull String data) {
         GameWebSocket gameWebSocket = userSockets.get(name);
         if (gameWebSocket == null) {
-            LOGGER.error("gameWebSocket == null");
+            LOGGER.warn("gameWebSocket == null");
             return;
         }
 
