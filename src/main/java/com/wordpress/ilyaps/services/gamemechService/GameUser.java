@@ -28,4 +28,7 @@ public class GameUser {
         score++;
     }
 
+    public void decrementScore() {
+        score -= 5;
+    }
 }

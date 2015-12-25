@@ -100,7 +100,11 @@ public class MultiNunjaGamemech extends GamemechServiceImpl {
             return;
         }
 
-        gameUser.incrementScore();
+        if (fruitId % 15 != 0) {
+            gameUser.incrementScore();
+        } else {
+            gameUser.decrementScore();
+        }
 
         String message = MultiNunjaMessageCreator.enemyShot(name, fruitId, gameSession);
         for (GameUser user : gameSession.getGameUsers()) {
